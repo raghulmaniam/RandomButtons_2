@@ -8,15 +8,15 @@
 
 
     <RelativeLayout
-        android:layout_width="250dp"
-        android:layout_height="360dp"
+        android:layout_width="320dp"
+        android:layout_height="270dp"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
         >
 
         <RelativeLayout
-            android:layout_width="250dp"
-            android:layout_height="300dp"
+            android:layout_width="320dp"
+            android:layout_height="220dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/drawable_dialogbox"
@@ -27,16 +27,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="80dp"
-                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/comic2"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
 
-                android:textSize="15dp"
-                android:textStyle="bold"
-                android:text=" Click many as buttons as possible \n 1. if(button) -> score++ \n 2. if(!button) -> score--  \n 3. Happy Clicking  "
-                >
-            </TextView>
+                android:text=" 1. Click many as buttons as possible \n 2. Negative score for wrong click \n       Happy Clicking!  "
+                android:textColor="@color/colorPrimary"
+                android:textSize="20dp"
+                android:textStyle="bold"></TextView>
 
             <Button
                 android:id="@+id/dialogOkayButton"
@@ -62,7 +61,7 @@
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/happy_smiley"
+            android:src="@mipmap/ic_launcher_foreground"
 
             >
 

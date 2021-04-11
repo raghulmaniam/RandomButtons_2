@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextView dialogText;
 
         dialogText = rulesDialog.findViewById(R.id.rulesText);
-        dialogText.setText("       Developed By \nRaghul Subramaniam");
+        dialogText.setText("Developed By \nRaghul Subramaniam");
 
         ImageView dialogImage;
 

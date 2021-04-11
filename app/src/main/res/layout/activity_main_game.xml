@@ -6,7 +6,7 @@
     android:id="@+id/mainConstraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="5dp"
+    android:layout_margin="20dp"
     android:background="@drawable/margin"
     >
 
@@ -21,43 +21,23 @@
         />
 
 
-
     <FrameLayout
         android:id="@+id/mainGameLayout"
-        android:layout_width="341dp"
-        android:layout_height="423dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="473dp"
+        android:layout_centerInParent="true"
         >
-
     </FrameLayout>
-
-    <ImageView
-        android:id="@+id/secondTurtleImage"
-        android:layout_width="80dp"
-        android:layout_height="77dp"
-        android:layout_alignParentStart="true"
-        android:contentDescription="@string/desc"
-        app:srcCompat="@mipmap/turtle_ingame_2"
-        android:layout_alignParentBottom="true"
-        />
-
 
     <TextView
         android:id="@+id/CounterTextViewMain"
-        android:layout_width="match_parent"
-        android:layout_height="397dp"
-
         android:textColor="@android:color/primary_text_dark"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
         android:textSize="80sp"
         android:visibility="invisible"
-        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:textAlignment="center"
         />
 
 
@@ -82,7 +62,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight=".5"
+            android:layout_weight=".7"
             android:orientation="vertical"
             >
 
@@ -184,12 +164,26 @@
             </LinearLayout>
 
         </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.9">
+            <ImageView
+                android:id="@+id/secondTurtleImage"
+                android:layout_width="fill_parent"
+                android:layout_height="77.0dip"
+                android:layout_alignParentBottom="true"
+                android:contentDescription="@string/desc"
+                android:layout_alignParentStart="true"
+                app:srcCompat="@mipmap/turtle_ingame_2" />
+        </LinearLayout>
 
         <LinearLayout
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight=".5"
+            android:layout_weight=".7"
             android:orientation="vertical"
             android:paddingLeft="5dp"
             >
@@ -209,11 +203,11 @@
 
                     <TextView
                         android:id="@+id/counterValueText"
-                        android:layout_width="103dp"
-                        android:layout_height="24dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:text="@string/Counter"
                         android:textColor="@color/cardview_light_background"
-                        android:textSize="12dp"
+                        android:textSize="8dp"
                         android:layout_centerInParent="true">
 
                     </TextView>
@@ -298,7 +292,7 @@
                         android:layout_height="match_parent"
                         android:text="@string/bPerSec"
                         android:textColor="@color/cardview_light_background"
-                        android:textSize="10dp"
+                        android:textSize="8dp"
                         android:paddingLeft="5dp"
                         android:paddingTop="5dp"
                         />

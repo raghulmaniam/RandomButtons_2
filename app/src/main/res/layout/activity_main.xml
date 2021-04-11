@@ -4,27 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
-    android:background="@drawable/margin"
+
 
 
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="140dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:background="@color/colorBlack"
         >
         <TextView
             android:id="@+id/highscore"
-            android:layout_width="98dp"
-            android:layout_height="31dp"
-            android:fontFamily="@font/comic7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comic2"
             android:text="High Score"
-            android:textSize="10dp"
+            android:textSize="20dp"
             android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
+            android:layout_marginRight="40dp"
             android:textColor="@color/colorPrimary"
             >
 
@@ -32,12 +33,13 @@
 
         <TextView
             android:id="@+id/enter"
-            android:layout_width="126dp"
-            android:layout_height="50dp"
-            android:fontFamily="@font/comic7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comic2"
             android:text="Enter"
-            android:textSize="30dp"
-            android:layout_marginTop="40dp"
+            android:textSize="40dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="40dp"
             android:layout_alignParentRight="true"
             android:textColor="@color/colorPrimary"
             android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -47,30 +49,28 @@
 
         <TextView
             android:id="@+id/about"
-            android:layout_width="54dp"
-            android:layout_height="26dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/comic7"
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comic2"
             android:text="About"
-            android:textSize="10dp"
+            android:textSize="20dp"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginRight="40dp"
             android:textColor="@color/colorPrimary"
             android:foreground="?attr/selectableItemBackgroundBorderless"
-            ></TextView>
+            />
 
         <TextView
             android:id="@+id/exit"
-            android:layout_width="43dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="@font/comic7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="40dp"
+            android:fontFamily="@font/comic2"
             android:text="Exit"
-            android:textSize="10dp"
+            android:textSize="20dp"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="125dp"
+            android:layout_marginTop="105dp"
             android:textColor="@color/colorPrimary">
 
         </TextView>
@@ -104,8 +104,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:text="@string/title"
-        android:fontFamily="@font/comic1"
-        android:textColor="@color/colorPrimary"/>
+        android:fontFamily="@font/comic2"
+        android:textColor="@color/colorBlack"/>
 
 
 </RelativeLayout>

@@ -422,9 +422,8 @@ Email: raghulmaniam@gmail.com
             }
 
             public void onFinish() {
-                counterValueMain.setText(Integer.toString(BigDecimal.ZERO.intValue()));
+                counterValueMain.setVisibility(View.GONE);
                 customToast("Start" , Toast.LENGTH_SHORT);
-                counterValueMain.setText(Integer.toString(0));
                 startGame();
                 counterUpAfterGame.run();
             }
@@ -636,11 +635,11 @@ Email: raghulmaniam@gmail.com
         Minimum: 1  Minimum: 400/500
         */
 
-        height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(150) + 50) * 0.5) + 0.5f);
-        width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(150) + 50) * 0.5) + 0.5f);
+        height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
+        width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
 
-        leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(300) + 10) * 0.8) + 0.5f);
-        topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(440) + 10) * 0.8) + 0.5f);
+        leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
+        topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
 
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 

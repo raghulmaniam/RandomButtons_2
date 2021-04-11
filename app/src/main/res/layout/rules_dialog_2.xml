@@ -9,13 +9,11 @@
     <RelativeLayout
         android:layout_width="250dp"
         android:layout_height="450dp"
-        android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
         >
-
         <RelativeLayout
             android:layout_width="250dp"
-            android:layout_height="410dp"
+            android:layout_height="400dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/drawable_dialogbox"
@@ -26,30 +24,29 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="60dp"
-                android:textColor="@color/green"
-                android:text="Try again my friend .."
+                android:textColor="@color/colorPrimary"
+                android:text="Great, wanna try again my friend?"
                 android:textSize="15dp"
                 android:textStyle="bold"
 
                 >
             </TextView>
-
             <TextView
                 android:id="@+id/rulesText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="130dp"
-                android:textColor="@color/green"
-                android:paddingLeft="20dp"
+                android:layout_centerVertical="true"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="40dp"
+                android:paddingBottom="20dp"
                 android:paddingRight="20dp"
+                android:fontFamily="@font/comic2"
+                android:textSize="25dp"
 
-                android:textSize="15dp"
-                android:textStyle="bold"
 
                 >
             </TextView>
+
 
             <Button
                 android:id="@+id/dialogRetryButton"
@@ -90,7 +87,7 @@
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/happy_smiley"
+            android:src="@mipmap/ic_launcher_foreground"
 
             >
 
