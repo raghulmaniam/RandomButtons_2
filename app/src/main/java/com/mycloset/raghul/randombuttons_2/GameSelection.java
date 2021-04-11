@@ -138,10 +138,10 @@ public class GameSelection extends Activity implements View.OnClickListener {
         dialogText = rulesDialog.findViewById(R.id.rulesText);
         dialogText.setText(R.string.game2);
 
-        ImageView dialogImage;
+        //ImageView dialogImage;
 
-        dialogImage = rulesDialog.findViewById(R.id.dialogImage);
-        dialogImage.setImageResource(R.drawable.happy_smiley);
+        /*dialogImage = rulesDialog.findViewById(R.id.dialogImage);
+        dialogImage.setImageResource(R.drawable.happy_smiley);*/
 
         dialogOkay = rulesDialog.findViewById(R.id.dialogOkayButton);
         rulesDialog.setCancelable(false);

@@ -1,25 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainConstraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="20dp"
     android:background="@drawable/margin"
+    android:gravity="center"
+android:layout_gravity="center"
     >
 
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerVertical="true"
 
-    <ImageView
-        android:id="@+id/start"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:contentDescription="@string/desc"
-        app:srcCompat="@mipmap/start"
+        android:gravity="center"
+        android:text="1" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_centerInParent="true"
-        />
+        android:layout_marginLeft="100dp"
+        android:gravity="center"
+        android:text="2" />
 
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="100dp"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:text="3" />
 
     <FrameLayout
         android:id="@+id/mainGameLayout"
@@ -28,20 +44,6 @@
         android:layout_centerInParent="true"
         >
     </FrameLayout>
-
-    <TextView
-        android:id="@+id/CounterTextViewMain"
-        android:textColor="@android:color/primary_text_dark"
-        android:layout_height="100dp"
-        android:layout_width="100dp"
-        android:textSize="80sp"
-        android:visibility="invisible"
-        android:layout_centerInParent="true"
-        android:textAlignment="center"
-        />
-
-
-
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -74,94 +76,9 @@
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".7">
-
-                    <TextView
-                        android:id="@+id/editText7"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/Score"
-                        android:textColor="@color/cardview_light_background"
-                        android:textSize="12dp"
-                        android:layout_centerInParent="true"
-                        >
-
-                    </TextView>
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".3"
-                    android:background="@drawable/box_curved">
-
-                    <TextView
-                        android:id="@+id/scoreTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:foregroundGravity="top"
-                        android:gravity="top"
-                        android:paddingLeft="5dp"
-                        android:textColor="@color/cardview_light_background">
-
-                    </TextView>
-                </RelativeLayout>
             </LinearLayout>
 
-            <LinearLayout
 
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight=".5"
-                android:baselineAligned="false">
-
-                <RelativeLayout
-
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".5">
-
-                    <TextView
-                        android:id="@+id/timeText"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/Time"
-                        android:textColor="@color/cardview_light_background"
-                        android:textSize="12dp"
-                        android:layout_centerInParent="true"
-                        >
-
-                    </TextView>
-                </RelativeLayout>
-
-                <RelativeLayout
-
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".5"
-                    android:background="@drawable/box_curved">
-
-                    <TextView
-                        android:id="@+id/timeValueTextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:foregroundGravity="top"
-                        android:gravity="top"
-                        android:paddingLeft="5dp"
-                        android:textColor="@color/cardview_light_background">
-
-                    </TextView>
-
-
-                </RelativeLayout>
-
-            </LinearLayout>
 
         </LinearLayout>
         <LinearLayout
@@ -176,7 +93,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
                 android:src="@drawable/turtle_blink"
-            />
+                />
 
         </LinearLayout>
 
@@ -203,13 +120,13 @@
                     android:layout_weight=".7">
 
                     <TextView
-                        android:id="@+id/counterValueText"
+                        android:id="@+id/scoreTextView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="@string/Counter"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/Score"
                         android:textColor="@color/cardview_light_background"
-                        android:textSize="8dp"
-                        android:layout_centerInParent="true">
+                        android:textSize="8dp">
 
                     </TextView>
                 </RelativeLayout>
@@ -249,11 +166,11 @@
                     android:layout_weight=".5">
 
                     <TextView
-                        android:id="@+id/buttonSpeedText"
+                        android:id="@+id/level"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:ems="10"
-                        android:text="@string/Speed"
+                        android:text="@string/Time"
                         android:textColor="@color/cardview_light_background"
                         android:textSize="12dp"
                         android:layout_centerInParent="true">
@@ -286,33 +203,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight=".55">
-
-                    <TextView
-                        android:id="@+id/staticText"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/bPerSec"
-                        android:textColor="@color/cardview_light_background"
-                        android:textSize="8dp"
-                        android:paddingLeft="5dp"
-                        android:paddingTop="5dp"
-                        />
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progressbar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="80dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:progressDrawable="@drawable/progressbar"
-        >
-
-    </ProgressBar>
 </RelativeLayout>

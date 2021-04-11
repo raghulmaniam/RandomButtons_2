@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -21,6 +20,9 @@ import android.os.CountDownTimer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import android.content.Context;
 import android.os.Vibrator;
@@ -53,7 +55,7 @@ Email: raghulmaniam@gmail.com
     Bundle bundle;
     int curLevel = 0;
     Random rnd = new Random();
-    boolean isSecondTurtleClicked = false;
+
     private ImageView secondTurtle;
     private Handler mHandler = new Handler();
     public Runnable counterUpAfterGame = new Runnable() {
@@ -75,7 +77,7 @@ Email: raghulmaniam@gmail.com
         }
     };
 
-    Dialog rulesDialog , gameoverDialog , gameoverAnim;
+    Dialog rulesDialog , gameoverDialog;
     ImageView turtle; //to refactor the variable name
 
     public ProgressBar progressBar;
@@ -111,7 +113,7 @@ Email: raghulmaniam@gmail.com
         secondTurtle = findViewById(R.id.secondTurtleImage);
         secondTurtle.setOnClickListener(this);
         secondTurtle.setTag("closed");
-        secondTurtleBlink.run();
+        //secondTurtleBlink.run();
 
         mainFrameLayout = findViewById(R.id.mainGameLayout);
         progressBar = findViewById(R.id.progressbar);
@@ -148,7 +150,7 @@ Email: raghulmaniam@gmail.com
         */
     }
 
-    private Runnable secondTurtleBlink = new Runnable() {
+   /* private Runnable secondTurtleBlink = new Runnable() {
         @Override
         public void run() {
             if (!isSecondTurtleClicked) {
@@ -183,9 +185,9 @@ Email: raghulmaniam@gmail.com
             }
         }
 
-    };
+    };*/
 
-    private Runnable wokeUpMessage = new Runnable() {
+    /*private Runnable wokeUpMessage = new Runnable() {
         @Override
         public void run() {
 
@@ -201,10 +203,10 @@ Email: raghulmaniam@gmail.com
 
                 isSecondTurtleClicked = false;
                 blinkDelay = 810;
-                secondTurtleBlink.run();
+                //secondTurtleBlink.run();
             }
         }
-    };
+    };*/
     private Runnable createButtonRunnable = new Runnable() {
         @Override
         public void run() {
@@ -383,7 +385,8 @@ Email: raghulmaniam@gmail.com
                 break;
             }
             case R.id.secondTurtleImage: {
-                wokeUpMessage.run();
+                //wokeUpMessage.run();
+                levelUp();
                 break;
             }
             default: {
@@ -410,7 +413,21 @@ Email: raghulmaniam@gmail.com
 
     public void callLevelUpText() {
         customToast("Level Up", Toast.LENGTH_SHORT);
-        wokeUpMessage.run();
+        //wokeUpMessage.run();
+        levelUp();
+    }
+
+    public void levelUp() {
+        new CountDownTimer(2000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                secondTurtle.setImageResource(R.mipmap.turtle_ingame);
+            }
+
+            public void onFinish() {
+                secondTurtle.setImageResource(R.drawable.turtle_blink);
+            }
+        }.start();
     }
 
     public void counterBeforeGame() {
@@ -476,9 +493,9 @@ Email: raghulmaniam@gmail.com
         if(gameoverDialog.getWindow()!= null)
             gameoverDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        turtle = gameoverDialog.findViewById(R.id.turtle);
-        turtle.setTag("open");
-        turtleBlink.run();
+        //turtle = gameoverDialog.findViewById(R.id.turtle);
+        //turtle.setTag("open");
+        //turtleBlink.run();
 
 
 
@@ -529,8 +546,10 @@ Email: raghulmaniam@gmail.com
     public void onBackPressed()
     {
         super.onBackPressed();
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        stopRandomButtons= true;
         finish();
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
     }
 
     public void ScoreDelegator(TextView dialogText){
@@ -553,7 +572,7 @@ Email: raghulmaniam@gmail.com
         dialogText.setText(finalScoreString);
     }
 
-    private Runnable turtleBlink = new Runnable() {
+    /*private Runnable turtleBlink = new Runnable() {
         @Override
         public void run() {
             if (turtle.getTag().equals("open")) {
@@ -584,7 +603,7 @@ Email: raghulmaniam@gmail.com
             mHandler.postDelayed(turtleBlink, blinkDelay);
 
         }
-    };
+    };*/
 
     public void customToast(String message, int length ) {
         Toast.makeText(getApplicationContext(), message, length).show();

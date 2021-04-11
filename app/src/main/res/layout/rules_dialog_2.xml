@@ -93,17 +93,15 @@
 
 
         </ImageView>
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/turtle"
+        android:layout_width="108dp"
+        android:layout_height="110dp"
+        android:src="@drawable/turtle_clink_gameover"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+    />
 
-        <ImageView
-            android:id="@+id/turtle"
-            android:layout_width="108dp"
-            android:layout_height="110dp"
-            android:src="@drawable/turtle_highscore_open"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            >
-
-        </ImageView>
 
     </RelativeLayout>
 

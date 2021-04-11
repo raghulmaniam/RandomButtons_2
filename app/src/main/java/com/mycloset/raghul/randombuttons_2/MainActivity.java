@@ -38,11 +38,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FrameLayout mainFrameLayout;
     int width, height, leftMargin,topMargin,dummyButtonCounter;
     Dialog rulesDialog;
+    ImageView bulb;
+    private  RelativeLayout homeScreen;
+    private  Boolean bulbOn;
+    private TextView titleText;
+    private Integer blinkDelay = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        TextView enter,about, highScore ,exit,titleText;
+        TextView enter,about, highScore ,exit;
 
         //--- To set Full Screen mode ---
         super.onCreate(savedInstanceState);
@@ -52,23 +57,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //--- To set Full Screen mode ---
 
+        bulbOn = true;
 
         setContentView(R.layout.activity_main);
         enter = findViewById(R.id.enter);
         about = findViewById(R.id.about);
         highScore = findViewById(R.id.highscore);
         exit = findViewById(R.id.exit);
-        titleText = findViewById(R.id.titleText);
-
+        bulb = findViewById(R.id.bulb);
+        homeScreen = findViewById(R.id.homescreen);
         mainFrameLayout = findViewById(R.id.dummyButtonLayout);
+        titleText = findViewById(R.id.titleText);
 
         enter.setOnClickListener(this);
         exit.setOnClickListener(this);
         highScore.setOnClickListener(this);
         about.setOnClickListener(this);
         titleText.setOnClickListener(this);
+        bulb.setOnClickListener(this);
 
         createButtonRunnable.run();
+        //bulbBlink.run();
         zoom_in(mainFrameLayout, 40000);
     }
 
@@ -113,6 +122,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button.startAnimation(anim);
     }
 
+    private Runnable bulbBlink = new Runnable() {
+        @Override
+        public void run() {
+
+                if (!bulbOn) {
+                    bulb.setImageResource(R.drawable.bulb_on);
+                    bulbOn = true;
+                    homeScreen.setBackgroundResource(R.drawable.curve);
+                } else {
+                    bulb.setImageResource(R.drawable.bulb_off);
+                    bulbOn = false;
+                    homeScreen.setBackgroundResource(R.drawable.box_curved);
+                }
+
+                //two blinks.. pause.. one blink.. pause..
+
+                if (blinkDelay == 100) {
+                    blinkDelay = 110;
+                    //secondTurtle.setImageResource(R.mipmap.turtle_ingame_2_1);
+                    //secondTurtle.setTag("closed");
+                } else if (blinkDelay == 110)
+                    blinkDelay = 112;
+                else if (blinkDelay == 112 || blinkDelay == 810) {
+                    //secondTurtle.setImageResource(R.mipmap.turtle_ingame_2);
+                    //secondTurtle.setTag("open");
+                    bulbOn = true;
+                    blinkDelay = 1800;
+                } else if (blinkDelay == 1800)
+                    blinkDelay = 101;
+                else if (blinkDelay == 101)
+                    blinkDelay = 1801;
+                else if (blinkDelay == 1801)
+                    blinkDelay = 100;
+
+                mHandler.postDelayed(bulbBlink, blinkDelay);
+            }
+
+
+    };
+
 
 
     @Override
@@ -135,6 +184,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SharedPreferences prefs = this.getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
                 int scoreEasy = prefs.getInt("easy", 0); //0 is the default value
                 Toast.makeText(getApplicationContext(), "HighScore: " + scoreEasy , Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.bulb: {
+                if(bulbOn) {
+                    bulb.setImageResource(R.drawable.bulb_off);
+                    bulbOn = false;
+                    homeScreen.setBackgroundResource(R.drawable.box_curved);
+                    titleText.setTextColor(Color.WHITE);
+                }
+                else {
+                    bulb.setImageResource(R.drawable.bulb_on);
+                    bulbOn = true;
+                    homeScreen.setBackgroundResource(R.drawable.curve);
+                    titleText.setTextColor(Color.BLACK);
+                }
                 break;
             }
             case R.id.titleText:
