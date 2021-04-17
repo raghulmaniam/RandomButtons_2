@@ -1,41 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerInParent="true"
     >
 
     <RelativeLayout
-        android:layout_width="250dp"
-        android:layout_height="450dp"
+        android:layout_width="320dp"
+        android:layout_height="350dp"
         android:layout_centerInParent="true"
         >
         <RelativeLayout
-            android:layout_width="250dp"
-            android:layout_height="400dp"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/drawable_dialogbox"
             >
-            <TextView
-                android:id="@+id/gameoverfixed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="60dp"
-                android:textColor="@color/colorPrimary"
-                android:text="Great, wanna try again my friend?"
-                android:textSize="15dp"
-                android:textStyle="bold"
 
-                >
-            </TextView>
             <TextView
                 android:id="@+id/rulesText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                android:layout_marginTop="60dp"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginLeft="40dp"
                 android:paddingBottom="20dp"
@@ -78,6 +67,15 @@
                 android:layout_centerHorizontal="true">
             </Button>
 
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/turtle"
+                android:layout_width="108dp"
+                android:layout_height="110dp"
+                android:src="@drawable/turtle_clink_gameover"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="40dp"
+
+                />
 
         </RelativeLayout>
 
@@ -93,14 +91,7 @@
 
 
         </ImageView>
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/turtle"
-        android:layout_width="108dp"
-        android:layout_height="110dp"
-        android:src="@drawable/turtle_clink_gameover"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-    />
+
 
 
     </RelativeLayout>

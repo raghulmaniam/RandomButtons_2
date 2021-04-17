@@ -39,11 +39,13 @@ public class GameSelection extends Activity implements View.OnClickListener {
     Random rnd = new Random();
     private FrameLayout mainFrameLayout;
     int width,height,leftMargin,topMargin,dummyButtonCounter ;
+    Button game1, game2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        Button game1, game2;
+
 
         //--- To set Full Screen mode ---
         super.onCreate(savedInstanceState);
@@ -173,7 +175,10 @@ public class GameSelection extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.button_game2: {
-                showRulesDialog();
+                //showRulesDialog();
+                Intent intent = new Intent(getApplicationContext(), SequenceButtons.class);
+                startActivity(intent);
+                //overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
                 break;
             }
         }

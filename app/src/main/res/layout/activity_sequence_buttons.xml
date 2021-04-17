@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainConstraint"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:background="@drawable/margin"
+    >
+
+    <Button
+        android:id="@+id/seq_button1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        android:gravity="center"
+        android:text="1" />
+
+    <Button
+        android:id="@+id/seq_button2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="100dp"
+        android:gravity="center"
+        android:visibility="invisible"
+        android:text="2" />
+
+    <Button
+        android:id="@+id/seq_button3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="100dp"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:visibility="invisible"
+        android:text="3" />
+
+    <FrameLayout
+        android:id="@+id/sequence_mainGameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="473dp"
+        android:layout_centerInParent="true"
+        >
+    </FrameLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@drawable/margin"
+        android:backgroundTint="@color/black_overlay"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingTop="5dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="5dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:orientation="horizontal"
+            android:layout_marginLeft="5dp"
+            >
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".9">
+
+                <TextView
+                    android:id="@+id/scoreTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:textAlignment="center"
+                    android:text="@string/Score"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="12dp">
+
+                </TextView>
+            </RelativeLayout>
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".5"
+                android:background="@drawable/box_curved"
+                android:layout_marginRight="15dp"
+                >
+
+                <TextView
+                    android:id="@+id/seq_CounterTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/cardview_light_background"
+                    android:paddingLeft="5dp"
+                    >
+
+                </TextView>
+
+
+            </RelativeLayout>
+
+
+
+        </LinearLayout>
+
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".5"
+                android:orientation="horizontal"
+                android:layout_marginLeft="5dp"
+                >
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".9">
+
+                    <TextView
+                        android:id="@+id/timeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/Time"
+                        android:textColor="@color/cardview_light_background"
+                        android:textSize="12dp"
+                        android:layout_centerInParent="true"
+                        android:textAlignment="center"
+                        >
+
+                    </TextView>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".5"
+                    android:background="@drawable/box_curved"
+                    android:layout_marginRight="15dp"
+                    >
+
+                    <TextView
+                        android:id="@+id/seq_timeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/cardview_light_background"
+                        android:paddingLeft="5dp"
+                        >
+                    </TextView>
+
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/seq_progressbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="55dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:progressDrawable="@drawable/progressbar"
+        >
+
+    </ProgressBar>
+
+</RelativeLayout>

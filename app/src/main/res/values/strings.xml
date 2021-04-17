@@ -18,5 +18,6 @@
     <string name="Counter">Counter</string>>
     <string name="Speed">Speed</string>>
     <string name="bPerSec">b/sec</string>>
+    <string name="sec">sec</string>>
 
 </resources>

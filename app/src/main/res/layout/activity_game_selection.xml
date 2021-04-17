@@ -43,7 +43,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="200dp"
        android:layout_centerVertical="true"
         >
 
@@ -79,7 +79,7 @@
             android:id="@+id/button_game2"
             android:layout_width="150dp"
             android:layout_height="50dp"
-            android:text="Memory Buttons"
+            android:text="Sequence Buttons"
             android:background="@drawable/rules_green"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
@@ -87,6 +87,22 @@
             android:textAllCaps="false"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="90dp"
+
+            >
+        </Button>
+
+        <Button
+            android:id="@+id/button_game3"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Memory Buttons"
+            android:background="@drawable/rules_green"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:textAllCaps="false"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150dp"
 
             >
         </Button>

@@ -45,10 +45,9 @@ Email: raghulmaniam@gmail.com
  */
 
     private TextView score, timeCounter,counterValue,counterValueMain,buttonSpeedView ;
-    TextView dialogText, dialogFixedTest;
+    TextView dialogText;
     private FrameLayout mainFrameLayout;
 
-    private Boolean stopRandomButtons;
     private Integer counterUpTimer = 0,blinkDelay = 100, counterBeforeGameValue =3 ;
     int counter, totalButtons,buttonsClicked, buttonsClickedForLevelChange,delayInMS , width,height ,leftMargin,topMargin ;
     long speed;
@@ -62,6 +61,7 @@ Email: raghulmaniam@gmail.com
         @Override
         public void run() {
             timeCounter.setText(Integer.toString(++counterUpTimer));
+            if(!gameover)
             mHandler.postDelayed(counterUpAfterGame, 1000);
         }
     };
@@ -86,6 +86,8 @@ Email: raghulmaniam@gmail.com
     CountDownTimer timer;
 
     Button retryButton, exitButton;
+
+    volatile Boolean gameover = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +129,6 @@ Email: raghulmaniam@gmail.com
         totalButtons = 0;
         buttonsClicked = 0;
 
-        stopRandomButtons = false;
         timeCounter.setTextColor(Color.RED);
 
         delayInMS = RandomButtonsConstants.INITIALDELAY;
@@ -211,7 +212,7 @@ Email: raghulmaniam@gmail.com
         @Override
         public void run() {
 
-            if (!stopRandomButtons) {
+            if (!gameover) {
                 counterValue.setText(Integer.toString(counter));
 
                 newButton();
@@ -318,12 +319,15 @@ Email: raghulmaniam@gmail.com
                     buttonSpeedView.setText(Long.toString(speed));
                     mHandler.postDelayed(createButtonRunnable, delayInMS);
                 } else {
+                    gameover = true;
                     gameOver();
                 }
 
             } else {
-                if (counterValue.getText().toString().equals("0") || counter < 0)
+                if (counterValue.getText().toString().equals("0") || counter < 0) {
+                    gameover = true;
                     gameOver();
+                }
                 else
                     mHandler.postDelayed(createButtonRunnable, 20);
             }
@@ -453,8 +457,9 @@ Email: raghulmaniam@gmail.com
             public void onTick(long millisUntilFinished) {
 
                 if( millisUntilFinished < 1600) {
-                    if (millisUntilFinished > 1101 )
-                        dialogFixedTest.setVisibility(View.VISIBLE);
+                    if (millisUntilFinished > 1101 ) {
+                        //retry.setVisibility(View.VISIBLE);
+                    }
                     else if (millisUntilFinished > 601)
                         retryButton.setVisibility(View.VISIBLE);
                     else if (millisUntilFinished > 1)
@@ -465,7 +470,6 @@ Email: raghulmaniam@gmail.com
             public void onFinish() {
 
                 //Just to be sure even if the above missed to make it Visible
-                dialogFixedTest.setVisibility(View.VISIBLE);
                 retryButton.setVisibility(View.VISIBLE);
                 exitButton.setVisibility(View.VISIBLE);
 
@@ -500,14 +504,12 @@ Email: raghulmaniam@gmail.com
 
 
         dialogText = gameoverDialog.findViewById(R.id.rulesText);
-        dialogFixedTest = gameoverDialog.findViewById(R.id.gameoverfixed);
 
         retryButton = gameoverDialog.findViewById(R.id.dialogRetryButton);
         exitButton = gameoverDialog.findViewById(R.id.dialogExitButton);
 
         retryButton.setVisibility(View.GONE);
         exitButton.setVisibility(View.GONE);
-        dialogFixedTest.setVisibility((View.GONE));
 
         gameoverDialog.setCancelable(false);
 
@@ -546,7 +548,7 @@ Email: raghulmaniam@gmail.com
     public void onBackPressed()
     {
         super.onBackPressed();
-        stopRandomButtons= true;
+        gameover= true;
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
 

@@ -40,9 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Dialog rulesDialog;
     ImageView bulb;
     private  RelativeLayout homeScreen;
-    private  Boolean bulbOn;
+    private  Boolean bulbOn, stopBulbAnim;
     private TextView titleText;
-    private Integer blinkDelay = 100;
+    private Integer blinkDelay = 3000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //--- To set Full Screen mode ---
 
         bulbOn = true;
+        stopBulbAnim = false;
 
         setContentView(R.layout.activity_main);
         enter = findViewById(R.id.enter);
@@ -138,24 +139,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 //two blinks.. pause.. one blink.. pause..
 
-                if (blinkDelay == 100) {
-                    blinkDelay = 110;
-                    //secondTurtle.setImageResource(R.mipmap.turtle_ingame_2_1);
-                    //secondTurtle.setTag("closed");
-                } else if (blinkDelay == 110)
-                    blinkDelay = 112;
-                else if (blinkDelay == 112 || blinkDelay == 810) {
-                    //secondTurtle.setImageResource(R.mipmap.turtle_ingame_2);
-                    //secondTurtle.setTag("open");
-                    bulbOn = true;
-                    blinkDelay = 1800;
-                } else if (blinkDelay == 1800)
-                    blinkDelay = 101;
-                else if (blinkDelay == 101)
-                    blinkDelay = 1801;
-                else if (blinkDelay == 1801)
-                    blinkDelay = 100;
+                if (blinkDelay == 3000) {
+                    blinkDelay = 1001;
+                } else if (blinkDelay == 1001) {
+                    blinkDelay = 50;
+                }
+                 else if (blinkDelay == 50) {
+                    blinkDelay = 45;
+                }
+                 else if (blinkDelay == 45)
+                     blinkDelay = 46;
+                 else if(blinkDelay == 46)
+                {
+                    blinkDelay = 1;
+                }
+                 else if (blinkDelay ==1)
+                {
+                    stopBulbAnim = true;
+                }
+                 //else if(blinkDelay == 4200)
+                   // mHandler.removeCallbacks(bulbBlink);
 
+            if(!stopBulbAnim)
                 mHandler.postDelayed(bulbBlink, blinkDelay);
             }
 
