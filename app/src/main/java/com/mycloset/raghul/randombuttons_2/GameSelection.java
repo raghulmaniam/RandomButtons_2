@@ -39,7 +39,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
     Random rnd = new Random();
     private FrameLayout mainFrameLayout;
     int width,height,leftMargin,topMargin,dummyButtonCounter ;
-    Button game1, game2;
+    Button game1, game2 , game3;
 
 
     @Override
@@ -58,12 +58,14 @@ public class GameSelection extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_game_selection);
 
         game1 = findViewById(R.id.button_game1); //Random Buttons
-        game2 = findViewById(R.id.button_game2); //Memory Buttons
+        game2 = findViewById(R.id.button_game2); //Sequence Buttons
+        game3 = findViewById(R.id.button_game3); //Memory Buttons
 
         mainFrameLayout = findViewById(R.id.dummyButtonLayout2);
 
         game1.setOnClickListener(this);
         game2.setOnClickListener(this);
+        game3.setOnClickListener(this);
 
         createButtonRunnable.run();
         rotate_right(mainFrameLayout, 70000);
@@ -177,6 +179,13 @@ public class GameSelection extends Activity implements View.OnClickListener {
             case R.id.button_game2: {
                 //showRulesDialog();
                 Intent intent = new Intent(getApplicationContext(), SequenceButtons.class);
+                startActivity(intent);
+                //overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
+                break;
+            }
+            case R.id.button_game3: {
+                //showRulesDialog();
+                Intent intent = new Intent(getApplicationContext(), MemoryButtons.class);
                 startActivity(intent);
                 //overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
                 break;
