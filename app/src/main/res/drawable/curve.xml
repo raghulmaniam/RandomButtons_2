@@ -18,7 +18,9 @@
             android:useLevel="true"
             >
 
-            <solid android:color="@color/colorGrey"/>
+            <solid android:color="@color/colorGrey"
+                />
+            
             <corners
 
                 android:bottomLeftRadius="0dp"

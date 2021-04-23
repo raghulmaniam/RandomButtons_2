@@ -3,7 +3,9 @@ package com.mycloset.raghul.randombuttons_2;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.CountDownTimer;
@@ -31,10 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import android.content.SharedPreferences.Editor;
+
 
 public class MemoryButtons extends AppCompatActivity implements View.OnClickListener {
 
-    int curLevel = 1 , buttonsCount =4;
+
+    AtomicInteger curLevel = new AtomicInteger();
+    AtomicInteger buttonsCount =new AtomicInteger();
 
     AtomicInteger score = new AtomicInteger();
 
@@ -45,7 +51,7 @@ public class MemoryButtons extends AppCompatActivity implements View.OnClickList
     private FrameLayout mainFrameLayout ;
     private  RelativeLayout bulbLayout;
 
-    volatile public Boolean gameOver= false, bulbOn = false;
+    volatile public Boolean bulbOn = false;
 
     int leftMargin, topMargin;
 
@@ -69,8 +75,23 @@ public class MemoryButtons extends AppCompatActivity implements View.OnClickList
     int timer_seconds = 0;
     AtomicInteger correctButtonsClicked = new AtomicInteger();
 
+    int layoutHeight, layoutWidth;
+
+
+    TextView dialogText;
+
+    Button retryButton, exitButton;
+
 TextView curLevelText;
 
+    CountDownTimer timerCheck;
+
+int BUTTON_SIZE = 200;
+    GradientDrawable whiteshape, redShape;
+
+
+
+boolean isNewLevel = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,10 +112,14 @@ TextView curLevelText;
         mainFrameLayout = findViewById(R.id.mem_mainGameLayout);
         bulbLayout = findViewById(R.id.mem_mainLayout);
 
-        mainFrameLayout.setOnClickListener(this);
+        //mainFrameLayout.setOnClickListener(this);
 
         score.set(0);
         correctButtonsClicked.set(5); //dont make it zero, first time check will fail
+
+        buttonsCount.set(4);
+
+        curLevel.set(1);
 
         bulb = findViewById(R.id.mem_bulb);
 
@@ -102,10 +127,23 @@ TextView curLevelText;
 
         scoreText.setText(Integer.toString(0));
 
+
         progressBarButtons = findViewById(R.id.mem_progressbar_buttons);
         progressBarTime = findViewById(R.id.mem_progressbar_time);
 
         curLevelText = findViewById(R.id.mem_levelText);
+
+         whiteshape=  new GradientDrawable();
+        whiteshape.setCornerRadius( 12 );
+        whiteshape.setStroke(5,Color.BLACK);
+
+        whiteshape.setColor(Color.WHITE);
+
+        redShape = new GradientDrawable();
+        redShape.setCornerRadius( 12 );
+        redShape.setStroke(5,Color.BLACK);
+
+        redShape.setColor(Color.RED);
 
         showRulesDialog();
 
@@ -114,11 +152,21 @@ TextView curLevelText;
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
-            case R.id.mem_mainGameLayout: {
+            case R.id.mem_dialogOkayButton: {
+                rulesDialog.dismiss();
+
+                layoutHeight = mainFrameLayout.getMeasuredHeight() -BUTTON_SIZE;
+                layoutWidth = mainFrameLayout.getMeasuredWidth() -BUTTON_SIZE;
+                //100 -> to negate button size
+
+                counterBeforeGame();
+                break;
+            }
+            /*case R.id.mem_mainGameLayout: {
                 score.decrementAndGet();
                 scoreText.setText(Integer.toString(score.get()));
                 break;
-            }
+            }*/
             default: {
 
                 GradientDrawable shape =  new GradientDrawable();
@@ -134,7 +182,7 @@ TextView curLevelText;
                 if ((int) view.getTag() == 1) {
                     //correct button
 
-                    buttonsProgressInt = new BigDecimal(correctButtonsClicked.incrementAndGet()).divide(new BigDecimal(buttonsCount), 2 , RoundingMode.UP).multiply(new BigDecimal(100));
+                    buttonsProgressInt = new BigDecimal(correctButtonsClicked.incrementAndGet()).divide(new BigDecimal(buttonsCount.get()), 2 , RoundingMode.UP).multiply(new BigDecimal(100));
                     progressBarButtons.setProgress(buttonsProgressInt.intValue());
 
                     score.incrementAndGet();
@@ -148,6 +196,14 @@ TextView curLevelText;
                     shape.setColor(Color.RED);
                 }
 
+                if(correctButtonsClicked.get() >= buttonsCount.get())
+                {
+                    customToast("New Level" +curLevel , Toast.LENGTH_SHORT);
+                    timerCheck.cancel();
+                    callNextLevel.run();
+
+                }
+
                 view.setBackground(shape);
                 scoreText.setText(Integer.toString(score.get()));
 
@@ -159,12 +215,12 @@ TextView curLevelText;
     {
         Button dialogOkay;
         rulesDialog = new Dialog(this);
-        rulesDialog.setContentView(R.layout.rules_dialog);
+        rulesDialog.setContentView(R.layout.mem_rules_dialog);
 
         if(rulesDialog.getWindow()!= null)
             rulesDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        dialogOkay = rulesDialog.findViewById(R.id.dialogOkayButton);
+        dialogOkay = rulesDialog.findViewById(R.id.mem_dialogOkayButton);
         rulesDialog.setCancelable(false);
 
         Window window = rulesDialog.getWindow();
@@ -173,7 +229,9 @@ TextView curLevelText;
         window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         rulesDialog.show();
 
-        dialogOkay.setOnClickListener(new View.OnClickListener(){
+        dialogOkay.setOnClickListener(this);
+
+        /*dialogOkay.setOnClickListener(new View.OnClickListener(){
                                           @Override
                                           public void onClick(View view)
                                           {
@@ -181,7 +239,7 @@ TextView curLevelText;
                                               counterBeforeGame();
                                           }
                                       }
-        );
+        );*/
     }
 
     public void counterBeforeGame() {
@@ -212,7 +270,7 @@ TextView curLevelText;
             public void onFinish() {
                 counterValueMain.setVisibility(View.INVISIBLE);
                 customToast("Start" , Toast.LENGTH_SHORT);
-                startGame();
+                //callNextLevel.run();
             }
         }.start();
     }
@@ -232,16 +290,113 @@ TextView curLevelText;
         newButton(Color.BLACK);
 
         countdownAfterGame();*/
-        createButtonRunnable.run();
+        callNextLevel.run();
 
     }
 
-    private Runnable createButtonRunnable = new Runnable() {
+    private Runnable callNextLevel = new Runnable() {
         @Override
         public void run() {
 
             if(bulbOn)
             {
+                isNewLevel = false;
+                //start to play
+                bulb.setImageResource(R.drawable.bulb_off);
+                bulbOn = false;
+                bulbLayout.setBackgroundResource(R.drawable.box_curved);
+
+                setBaseColor(buttonsList);
+
+                timer_seconds = 0;
+                //timer.run();
+                gameTimer(curLevel.get());
+                customToast("Buld OFF" , Toast.LENGTH_SHORT);
+
+
+                //mHandler.postDelayed(createButtonRunnable, 5000);
+            }
+            else
+            {
+                //memorize
+                progressBarTime.setProgress(0);
+                progressBarButtons.setProgress(0);
+
+                curLevelText.setText(Integer.toString(curLevel.getAndIncrement()));
+                buttonsCount.incrementAndGet();
+
+                progressBarTime.setProgress(0);
+                progressBarButtons.setProgress(0);
+
+                clearButtons(buttonsList);
+
+                buttonsList.clear();
+
+                showButtons();
+
+                bulb.setImageResource(R.drawable.bulb_on);
+                bulbOn = true;
+                bulbLayout.setBackgroundResource(R.drawable.curve2);
+
+                buttonsList.add(newButton(Color.RED));
+                buttonsList.add(newButton(Color.RED));
+
+
+
+                for (int i = 0; i < buttonsCount.get(); i++)
+                    buttonsList.add(newButton(Color.WHITE));
+
+                correctButtonsClicked.set(0);
+
+
+
+                mHandler.postDelayed(callNextLevel, 5000);
+                countdownAfterGame();
+            }
+            //mHandler.postDelayed(createButtonRunnable, 5000);
+
+        }
+    };
+
+
+    public void gameTimer(final int passedLevel) {
+        timerCheck = new CountDownTimer(15000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+
+                if(!bulbOn) {
+                    timeProgressInt = new BigDecimal(timer_seconds++).multiply(new BigDecimal(6.666)); //for 15 seconds
+                    progressBarTime.setProgress(timeProgressInt.intValue());
+                }
+
+//                counterValueMain.setVisibility(View.VISIBLE);
+//                Long val = millisUntilFinished / 1000;
+//                counterValueMain.setText(Integer.toString(val.intValue()));
+            }
+
+            public void onFinish() {
+
+
+                if((correctButtonsClicked.get() < buttonsCount.get()) && !bulbOn && (passedLevel == curLevel.get()))
+                {
+                    progressBarTime.setProgress(100);
+
+                    mainFrameLayout.setOnClickListener(null);
+                    gameover();
+                }
+            }
+        }.start();
+
+
+    }
+
+    /*private Runnable createButtonRunnable = new Runnable() {
+        @Override
+        public void run() {
+
+            if(bulbOn)
+            {
+                //start to play
                 bulb.setImageResource(R.drawable.bulb_off);
                 bulbOn = false;
                 bulbLayout.setBackgroundResource(R.drawable.box_curved);
@@ -252,10 +407,11 @@ TextView curLevelText;
                 timer.run();
 
 
-                mHandler.postDelayed(createButtonRunnable, 10000);
+                mHandler.postDelayed(createButtonRunnable, 5000);
             }
             else
             {
+                //memorize
                 progressBarTime.setProgress(0);
                 progressBarButtons.setProgress(0);
 
@@ -297,24 +453,159 @@ TextView curLevelText;
             //mHandler.postDelayed(createButtonRunnable, 5000);
 
         }
-    };
+    };*/
 
     public Runnable timer = new Runnable() {
         @Override
         public void run() {
-            timeProgressInt = new BigDecimal(timer_seconds++).multiply(new BigDecimal(10)); //for 10 seconds
+            timeProgressInt = new BigDecimal(timer_seconds++).multiply(new BigDecimal(20)); //for 10 seconds
             progressBarTime.setProgress(timeProgressInt.intValue());
 
             if(timer_seconds<=10)
-                mHandler.postDelayed(timer, 1000);
+                mHandler.postDelayed(timer, 5000);
 
         }
     };
 
     public  void gameover()
     {
-        customToast("Game Over", Toast.LENGTH_SHORT);
+        showLayout();
+        showGameOverDialog();
+        //customToast("Game Over", Toast.LENGTH_SHORT);
     }
+
+
+    public void showLayout()
+    {
+        bulb.setImageResource(R.drawable.bulb_on);
+        bulbLayout.setBackgroundResource(R.drawable.curve2);
+
+        showButtons();
+    }
+
+    public void showButtons()
+    {
+        /*for(Button button: buttons)
+        {
+            GradientDrawable shape =  new GradientDrawable();
+            shape.setCornerRadius( 12 );
+            shape.setStroke(5,Color.BLACK);
+            shape.setColor(Color.BLACK);
+
+            if((int) button.getTag() == 1)
+                shape.setColor(Color.WHITE);
+            else
+                shape.setColor(Color.RED);
+
+            button.setBackground(shape);
+            button.setVisibility(View.VISIBLE);
+        }*/
+
+        whiteshape.setColor(Color.WHITE);
+        redShape.setColor(Color.RED);
+    }
+
+    public void showGameOverDialog()
+    {
+        gameoverDialog = new Dialog(this);
+        gameoverDialog.setContentView(R.layout.rules_dialog_2);
+        if(gameoverDialog.getWindow()!= null)
+            gameoverDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        //turtle = gameoverDialog.findViewById(R.id.turtle);
+        //turtle.setTag("open");
+        //turtleBlink.run();
+
+
+
+        dialogText = gameoverDialog.findViewById(R.id.rulesText);
+
+        retryButton = gameoverDialog.findViewById(R.id.dialogRetryButton);
+        exitButton = gameoverDialog.findViewById(R.id.dialogExitButton);
+
+        retryButton.setVisibility(View.GONE);
+        exitButton.setVisibility(View.GONE);
+
+        gameoverDialog.setCancelable(false);
+
+        Window window = gameoverDialog.getWindow();
+        window.setGravity(Gravity.CENTER);
+        window.getAttributes().windowAnimations=R.style.DialogAnimation;
+        window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        gameoverDialog.show();
+
+        retryButton.setOnClickListener(new View.OnClickListener(){
+                                           @Override
+                                           public void onClick(View view)
+                                           {
+                                               gameoverDialog.dismiss();
+                                               Intent intent = new Intent(getApplicationContext(), MemoryButtons.class);
+                                               startActivity(intent);
+                                           }
+                                       }
+        );
+
+        exitButton.setOnClickListener(new View.OnClickListener(){
+                                          @Override
+                                          public void onClick(View view)
+                                          {
+                                              Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                              startActivity(intent);
+                                              gameoverDialog.dismiss();
+                                          }
+                                      }
+        );
+
+        counterAfterGame();
+    }
+
+    public void counterAfterGame() {
+        new CountDownTimer(2000, 500) {
+
+            public void onTick(long millisUntilFinished) {
+
+                if( millisUntilFinished < 1600) {
+                    if (millisUntilFinished > 1101 ) {
+                        //retry.setVisibility(View.VISIBLE);
+                    }
+                    else if (millisUntilFinished > 601)
+                        retryButton.setVisibility(View.VISIBLE);
+                    else if (millisUntilFinished > 1)
+                        exitButton.setVisibility(View.VISIBLE);
+                }
+            }
+
+            public void onFinish() {
+
+                //Just to be sure even if the above missed to make it Visible
+                retryButton.setVisibility(View.VISIBLE);
+                exitButton.setVisibility(View.VISIBLE);
+
+                ScoreDelegator(dialogText);
+            }
+        }.start();
+    }
+
+    public void ScoreDelegator(TextView dialogText){
+
+        SharedPreferences prefs = this.getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
+        int highScoreEasy = prefs.getInt("mem", 0); //0 is the default value
+        int finalScore = Integer.parseInt(scoreText.getText().toString());
+        String finalScoreString ="Score: " + finalScore +"\n" +"High Score: " +highScoreEasy;
+
+        if(finalScore>highScoreEasy)
+        {
+            Editor editor = prefs.edit();
+            editor.putInt("mem", finalScore);
+            editor.apply();
+            customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
+        }
+        else
+            customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
+
+        dialogText.setText(finalScoreString);
+    }
+
 
     public void clearButtons(List<Button> buttons)
     {
@@ -329,18 +620,21 @@ TextView curLevelText;
     {
         for(Button button: buttons)
         {
-            GradientDrawable shape =  new GradientDrawable();
+            /*GradientDrawable shape =  new GradientDrawable();
             shape.setCornerRadius( 12 );
             shape.setStroke(5,Color.BLACK);
             shape.setColor(Color.BLACK);
 
             button.setBackground(shape);
-
+*/
             /*button.clearAnimation();
             button.setVisibility(View.INVISIBLE);*/
             button.setOnClickListener(this);
 
         }
+
+        whiteshape.setColor(Color.BLACK);
+        redShape.setColor(Color.BLACK);
 
     }
 
@@ -348,10 +642,14 @@ TextView curLevelText;
     public Button newButton(int color) {
         Button button = new Button(this);
 
-        if(color == Color.WHITE)
+        if(color == Color.WHITE) {
             button.setTag(1);
-        else if(color == Color.RED)
+            button.setBackground(whiteshape);
+        }
+        else if(color == Color.RED) {
             button.setTag(2);
+            button.setBackground(redShape);
+        }
 
         animate(button);
 
@@ -371,22 +669,27 @@ TextView curLevelText;
         //height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
         //width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
 
-        leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
-        topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
+        //leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
+        //topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
+
+        leftMargin = randomParam.nextInt(layoutWidth);
+        topMargin = randomParam.nextInt(layoutHeight-380) +380;
+
+        //topMargin = 380;
 
         //int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
         // button.setBackgroundColor(color);
 
-        GradientDrawable shape =  new GradientDrawable();
+        /*GradientDrawable shape =  new GradientDrawable();
         shape.setCornerRadius( 12 );
         shape.setStroke(5,Color.BLACK);
 
-        shape.setColor(color);
+        shape.setColor(color);*/
 
-        button.setBackground(shape);
 
-        LinearLayout.LayoutParams layoutparams = new LinearLayout.LayoutParams(250, 250);
+
+        LinearLayout.LayoutParams layoutparams = new LinearLayout.LayoutParams(BUTTON_SIZE, BUTTON_SIZE);
         layoutparams.setMargins(leftMargin, topMargin, 0, 0);
 
 
@@ -400,6 +703,7 @@ TextView curLevelText;
     public void onBackPressed()
     {
         super.onBackPressed();
+        timerCheck.cancel();
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
 

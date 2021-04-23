@@ -20,17 +20,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MemoryButtons"></activity>
-        <activity android:name=".SequenceButtons" />
-        <activity android:name=".GameSelection" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MemoryButtons">
+            android:screenOrientation="portrait"
+        </activity>
+        <activity android:name=".SequenceButtons"
+            android:screenOrientation="portrait" />
+        <activity android:name=".GameSelection"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainGameActivity" />
+        <activity android:name=".MainGameActivity"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="preloaded_fonts"

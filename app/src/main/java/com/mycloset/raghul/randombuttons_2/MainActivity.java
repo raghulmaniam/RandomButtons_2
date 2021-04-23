@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (!bulbOn) {
                     bulb.setImageResource(R.drawable.bulb_on);
                     bulbOn = true;
-                    homeScreen.setBackgroundResource(R.drawable.curve);
+                    homeScreen.setBackgroundResource(R.drawable.curve_intro);
                 } else {
                     bulb.setImageResource(R.drawable.bulb_off);
                     bulbOn = false;
-                    homeScreen.setBackgroundResource(R.drawable.box_curved);
+                    homeScreen.setBackgroundResource(R.drawable.curve_intro);
                 }
 
                 //two blinks.. pause.. one blink.. pause..
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else {
                     bulb.setImageResource(R.drawable.bulb_on);
                     bulbOn = true;
-                    homeScreen.setBackgroundResource(R.drawable.curve);
+                    homeScreen.setBackgroundResource(R.drawable.curve_intro);
                     titleText.setTextColor(Color.BLACK);
                 }
                 break;

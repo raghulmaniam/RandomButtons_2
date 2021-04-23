@@ -139,6 +139,8 @@ Email: raghulmaniam@gmail.com
 
         progressBar = findViewById(R.id.seq_progressbar);
 
+        mainFrameLayout = findViewById(R.id.sequence_mainGameLayout);
+
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         showRulesDialog();
@@ -234,12 +236,12 @@ Email: raghulmaniam@gmail.com
     {
         Button dialogOkay;
         rulesDialog = new Dialog(this);
-        rulesDialog.setContentView(R.layout.rules_dialog);
+        rulesDialog.setContentView(R.layout.seq_rules_dialog);
 
         if(rulesDialog.getWindow()!= null)
             rulesDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        dialogOkay = rulesDialog.findViewById(R.id.dialogOkayButton);
+        dialogOkay = rulesDialog.findViewById(R.id.seq_dialogOkayButton);
         rulesDialog.setCancelable(false);
 
         Window window = rulesDialog.getWindow();

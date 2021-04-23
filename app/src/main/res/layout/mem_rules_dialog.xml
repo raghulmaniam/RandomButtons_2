@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    >
+
+
+    <RelativeLayout
+        android:layout_width="320dp"
+        android:layout_height="270dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        >
+
+        <RelativeLayout
+            android:layout_width="320dp"
+            android:layout_height="220dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/drawable_dialogbox"
+            >
+
+            <TextView
+                android:id="@+id/rulesText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/comic2"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+
+                android:text=" When the light turns off, find all the White Buttons \n       Happy Clicking!  "
+                android:textColor="@color/colorPrimary"
+                android:textSize="20dp"
+                android:textStyle="bold"></TextView>
+
+            <Button
+                android:id="@+id/mem_dialogOkayButton"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:text="Okeh ...!"
+                android:background="@drawable/rules_green"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:textAllCaps="false"
+                android:layout_marginBottom="25dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
+            </Button>
+
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/dialogImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_launcher_foreground"
+
+            >
+
+
+        </ImageView>
+
+    </RelativeLayout>
+
+</RelativeLayout>

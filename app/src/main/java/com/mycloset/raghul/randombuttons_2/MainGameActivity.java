@@ -20,9 +20,6 @@ import android.os.CountDownTimer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import android.content.Context;
 import android.os.Vibrator;
@@ -54,6 +51,8 @@ Email: raghulmaniam@gmail.com
     Bundle bundle;
     int curLevel = 0;
     Random rnd = new Random();
+
+    int layoutHeight, layoutWidth;
 
     private ImageView secondTurtle;
     private Handler mHandler = new Handler();
@@ -372,6 +371,9 @@ Email: raghulmaniam@gmail.com
         switch (view.getId()) {
             case R.id.start: {
                 removeButton(view);
+                layoutHeight = mainFrameLayout.getMeasuredHeight();
+                layoutWidth = mainFrameLayout.getMeasuredWidth();
+
                 counterValueMain.setVisibility(View.VISIBLE);
                 showRulesDialog();
                 break;
@@ -656,11 +658,18 @@ Email: raghulmaniam@gmail.com
         Minimum: 1  Minimum: 400/500
         */
 
-        height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
-        width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
+        height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 70) * 0.5) + 0.5f);
+        width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 70) * 0.5) + 0.5f);
 
-        leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
-        topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
+        //leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
+        //topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
+
+        //leftMargin = layoutWidth-width;
+        //topMargin = layoutHeight - height;
+
+        leftMargin = randomParam.nextInt(layoutWidth-width);
+        topMargin = randomParam.nextInt(layoutHeight-height-240) +240;
+        /* 240 - > to negate the height till the progress bar*/
 
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
