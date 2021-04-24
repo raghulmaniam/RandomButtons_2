@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +45,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView titleText;
     private Integer blinkDelay = 3000;
 
+    MediaPlayer defaultSound = null;
+    MediaPlayer exitSound = null;
+
+    MediaPlayer lightOn = null;
+    MediaPlayer lightOff = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -70,6 +77,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mainFrameLayout = findViewById(R.id.dummyButtonLayout);
         titleText = findViewById(R.id.titleText);
 
+        defaultSound = MediaPlayer.create(this, R.raw.default_sound);
+        exitSound = MediaPlayer.create(this, R.raw.exit_sound);
+
+        lightOn = MediaPlayer.create(this, R.raw.light_on_sound);
+        lightOff = MediaPlayer.create(this, R.raw.light_off_sound);
+
         enter.setOnClickListener(this);
         exit.setOnClickListener(this);
         highScore.setOnClickListener(this);
@@ -80,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         createButtonRunnable.run();
         //bulbBlink.run();
         zoom_in(mainFrameLayout, 40000);
+
+
     }
 
     public void newButton() {
@@ -174,6 +189,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (view.getId()) {
             case R.id.enter: {
+
+                if(defaultSound!= null)
+                    defaultSound.start();
+
                 Intent intent = new Intent(getApplicationContext(), GameSelection.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
@@ -181,11 +200,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.exit: {
+
+                if(exitSound!= null)
+                    exitSound.start();
+
                 finish();
                 System.exit(0);
                 break;
             }
             case R.id.highscore: {
+
+                if(defaultSound!= null)
+                    defaultSound.start();
+
                 SharedPreferences prefs = this.getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
                 int scoreEasy = prefs.getInt("easy", 0); //0 is the default value
                 Toast.makeText(getApplicationContext(), "HighScore: " + scoreEasy , Toast.LENGTH_SHORT).show();
@@ -193,12 +220,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.bulb: {
                 if(bulbOn) {
+
+                    if(lightOff!= null)
+                        lightOff.start();
+
                     bulb.setImageResource(R.drawable.bulb_off);
                     bulbOn = false;
                     homeScreen.setBackgroundResource(R.drawable.box_curved);
                     titleText.setTextColor(Color.WHITE);
                 }
                 else {
+
+                    if(lightOn!= null)
+                        lightOn.start();
+
                     bulb.setImageResource(R.drawable.bulb_on);
                     bulbOn = true;
                     homeScreen.setBackgroundResource(R.drawable.curve_intro);
@@ -208,6 +243,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.titleText:
             case R.id.about: {
+
+                if(defaultSound!= null)
+                    defaultSound.start();
+
                 showRulesDialog();
                 break;
             }

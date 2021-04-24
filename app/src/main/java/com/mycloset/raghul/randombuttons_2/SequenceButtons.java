@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -70,6 +71,12 @@ Email: raghulmaniam@gmail.com
 
     Vibrator v;
 
+    MediaPlayer clickSound = null;
+    MediaPlayer defaultSound = null;
+    MediaPlayer exitSound = null;
+
+    MediaPlayer tickFastSound = null;
+
     private Handler mHandler = new Handler();
     public Runnable timer = new Runnable() {
         @Override
@@ -80,7 +87,7 @@ Email: raghulmaniam@gmail.com
             timeCounter.setText(Integer.toString(timer_seconds));
 
             if(timer_seconds<=60)
-            mHandler.postDelayed(timer, 1000);
+                mHandler.postDelayed(timer, 1000);
             else
             {
                 gameOver();
@@ -92,6 +99,13 @@ Email: raghulmaniam@gmail.com
     @Override
     public void onBackPressed()
     {
+
+        if(tickFastSound!= null)
+            tickFastSound.stop();
+
+        if(exitSound!= null)
+            exitSound.start();
+
         super.onBackPressed();
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -141,6 +155,12 @@ Email: raghulmaniam@gmail.com
 
         mainFrameLayout = findViewById(R.id.sequence_mainGameLayout);
 
+        clickSound = MediaPlayer.create(this, R.raw.rand_click_wav);
+        defaultSound = MediaPlayer.create(this, R.raw.default_sound);
+        exitSound = MediaPlayer.create(this, R.raw.exit_sound);
+
+        tickFastSound = MediaPlayer.create(this, R.raw.tick_fast);
+
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         showRulesDialog();
@@ -154,6 +174,9 @@ Email: raghulmaniam@gmail.com
 
         if(curSeq.get() == (Integer)view.getTag())
         {
+            if(clickSound!=null)
+                clickSound.start();
+
             newButton();
             removeButton(view);
             curSeq.incrementAndGet();
@@ -161,7 +184,7 @@ Email: raghulmaniam@gmail.com
         }
         else
         {
-            customToast("GameOver" , Toast.LENGTH_SHORT);
+            //customToast("GameOver" , Toast.LENGTH_SHORT);
         }
     }
 
@@ -255,6 +278,7 @@ Email: raghulmaniam@gmail.com
                                           public void onClick(View view)
                                           {
                                               rulesDialog.dismiss();
+
                                               timer.run();
                                               startGame();
                                           }
@@ -293,11 +317,18 @@ Email: raghulmaniam@gmail.com
                 b1.setVisibility(View.VISIBLE);
                 b2.setVisibility(View.VISIBLE);
                 b3.setVisibility(View.VISIBLE);
+
+                if(tickFastSound!= null)
+                    tickFastSound.start();
+
             }
         }.start();
     }
 
     public void gameOver() {
+
+        if(tickFastSound!= null)
+            tickFastSound.stop();
 
         if(v!=null)
             v.vibrate(200);
@@ -339,6 +370,10 @@ Email: raghulmaniam@gmail.com
                                            @Override
                                            public void onClick(View view)
                                            {
+
+                                               if(defaultSound!= null)
+                                                   defaultSound.start();
+
                                                gameoverDialog.dismiss();
                                                Intent intent = new Intent(getApplicationContext(), SequenceButtons.class);
                                                startActivity(intent);
@@ -350,6 +385,10 @@ Email: raghulmaniam@gmail.com
                                           @Override
                                           public void onClick(View view)
                                           {
+
+                                              if(exitSound!= null)
+                                                  exitSound.start();
+
                                               Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                               startActivity(intent);
                                               gameoverDialog.dismiss();

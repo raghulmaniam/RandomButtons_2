@@ -185,4 +185,12 @@
         android:layout_marginTop="88dp"
         android:src="@drawable/bulb_on" />
 
+    <ImageView
+        android:id="@+id/mem_star"
+        android:layout_centerInParent="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="88dp"
+        android:src="@drawable/star" />
+
 </RelativeLayout>

@@ -7,6 +7,7 @@ import android.content.Intent;
 
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -41,6 +42,9 @@ public class GameSelection extends Activity implements View.OnClickListener {
     int width,height,leftMargin,topMargin,dummyButtonCounter ;
     Button game1, game2 , game3;
 
+    MediaPlayer defaultSound = null;
+    MediaPlayer exitSound = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,9 @@ public class GameSelection extends Activity implements View.OnClickListener {
         game3 = findViewById(R.id.button_game3); //Memory Buttons
 
         mainFrameLayout = findViewById(R.id.dummyButtonLayout2);
+
+        defaultSound = MediaPlayer.create(this, R.raw.default_sound);
+        exitSound = MediaPlayer.create(this, R.raw.exit_sound);
 
         game1.setOnClickListener(this);
         game2.setOnClickListener(this);
@@ -128,49 +135,28 @@ public class GameSelection extends Activity implements View.OnClickListener {
         button.startAnimation(anim);
     }
 
-    public void showRulesDialog()
+    @Override
+    public void onBackPressed()
     {
-        rulesDialog = new Dialog(this);
-        rulesDialog.setContentView(R.layout.rules_dialog);
+        if(exitSound!= null)
+            exitSound.start();
 
-        if(rulesDialog.getWindow()!= null)
-        rulesDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        super.onBackPressed();
+        finish();
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
-        Button dialogOkay;
-        TextView dialogText;
-
-        dialogText = rulesDialog.findViewById(R.id.rulesText);
-        dialogText.setText(R.string.game2);
-
-        //ImageView dialogImage;
-
-        /*dialogImage = rulesDialog.findViewById(R.id.dialogImage);
-        dialogImage.setImageResource(R.drawable.happy_smiley);*/
-
-        dialogOkay = rulesDialog.findViewById(R.id.dialogOkayButton);
-        rulesDialog.setCancelable(false);
-
-        Window window = rulesDialog.getWindow();
-        window.setGravity(Gravity.CENTER);
-        window.getAttributes().windowAnimations=R.style.DialogAnimation;
-        window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-        rulesDialog.show();
-
-        dialogOkay.setOnClickListener(new View.OnClickListener(){
-                                          @Override
-                                          public void onClick(View view)
-                                          {
-                                              rulesDialog.dismiss();
-                                          }
-                                      }
-        );
     }
+
 
     @Override
     public void onClick(View view){
 
         switch (view.getId()) {
             case R.id.button_game1: {
+
+                if(defaultSound!= null)
+                    defaultSound.start();
+
                 Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
@@ -178,6 +164,10 @@ public class GameSelection extends Activity implements View.OnClickListener {
             }
             case R.id.button_game2: {
                 //showRulesDialog();
+
+                if(defaultSound!= null)
+                    defaultSound.start();
+
                 Intent intent = new Intent(getApplicationContext(), SequenceButtons.class);
                 startActivity(intent);
                 //overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
@@ -185,6 +175,10 @@ public class GameSelection extends Activity implements View.OnClickListener {
             }
             case R.id.button_game3: {
                 //showRulesDialog();
+
+                if(defaultSound!= null)
+                    defaultSound.start();
+
                 Intent intent = new Intent(getApplicationContext(), MemoryButtons.class);
                 startActivity(intent);
                 //overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);

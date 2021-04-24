@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.app.Activity;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.content.SharedPreferences.Editor;
+
 
 public class MainGameActivity extends Activity implements View.OnClickListener {
 
@@ -88,6 +90,16 @@ Email: raghulmaniam@gmail.com
 
     volatile Boolean gameover = false;
 
+    MediaPlayer clickSound = null;
+    MediaPlayer defaultSound = null;
+    MediaPlayer exitSound = null;
+
+    public static int GAMECOUNTERLIMIT = 15;
+    public static int INITIALDELAY = 1000;
+
+    //MediaPlayer dialogSound = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -130,7 +142,7 @@ Email: raghulmaniam@gmail.com
 
         timeCounter.setTextColor(Color.RED);
 
-        delayInMS = RandomButtonsConstants.INITIALDELAY;
+        delayInMS = INITIALDELAY;
         score.setText(Integer.toString(buttonsClicked));
         buttonSpeedView.setText(Long.toString(0));
         counterValue.setText(Integer.toString(buttonsClicked));
@@ -138,6 +150,13 @@ Email: raghulmaniam@gmail.com
         start = findViewById(R.id.start);
         start.setOnClickListener(this);
         start.setImageResource(R.mipmap.start);
+
+        clickSound = MediaPlayer.create(this, R.raw.rand_click_wav);
+        defaultSound = MediaPlayer.create(this, R.raw.default_sound);
+        exitSound = MediaPlayer.create(this, R.raw.exit_sound);
+
+
+        //dialogSound = MediaPlayer.create(this, R.raw.dialog_okay);
 
         /*Width
         Minimum: 50 Maximum: 450
@@ -288,7 +307,7 @@ Email: raghulmaniam@gmail.com
                 }
 
 
-                if (counter < RandomButtonsConstants.GAMECOUNTERLIMIT) {
+                if (counter < GAMECOUNTERLIMIT) {
 
                 /*
                 Setting Delay from Counter Value
@@ -358,7 +377,10 @@ Email: raghulmaniam@gmail.com
             public void onClick(View view)
             {
                 rulesDialog.dismiss();
+                //dialogSound.start();
+
                 counterBeforeGame();
+
                 //startGame();
             }
         }
@@ -373,6 +395,9 @@ Email: raghulmaniam@gmail.com
                 removeButton(view);
                 layoutHeight = mainFrameLayout.getMeasuredHeight();
                 layoutWidth = mainFrameLayout.getMeasuredWidth();
+
+                if(defaultSound!= null)
+                    defaultSound.start();
 
                 counterValueMain.setVisibility(View.VISIBLE);
                 showRulesDialog();
@@ -392,12 +417,19 @@ Email: raghulmaniam@gmail.com
             }
             case R.id.secondTurtleImage: {
                 //wokeUpMessage.run();
+                if(defaultSound!= null)
+                    defaultSound.start();
+
                 levelUp();
                 break;
             }
             default: {
                 //Positive Score
                 removeButton(view);
+
+                if(clickSound!= null)
+                    clickSound.start();
+
                 counter--;
                 counterValue.setText(Integer.toString(counter));
                 buttonsClicked++;
@@ -526,6 +558,10 @@ Email: raghulmaniam@gmail.com
                                           public void onClick(View view)
                                           {
                                               gameoverDialog.dismiss();
+
+                                              if(defaultSound!= null)
+                                                  defaultSound.start();
+
                                               Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
                                               startActivity(intent);
                                           }
@@ -536,6 +572,10 @@ Email: raghulmaniam@gmail.com
                                            @Override
                                            public void onClick(View view)
                                            {
+
+                                               if(exitSound!= null)
+                                                   exitSound.start();
+
                                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                                startActivity(intent);
                                                gameoverDialog.dismiss();
@@ -549,6 +589,10 @@ Email: raghulmaniam@gmail.com
     @Override
     public void onBackPressed()
     {
+
+        if(exitSound!= null)
+            exitSound.start();
+
         super.onBackPressed();
         gameover= true;
         finish();
@@ -643,6 +687,8 @@ Email: raghulmaniam@gmail.com
     public void newButton() {
         final Button button = new Button(this);
         button.setOnClickListener(this);
+
+        //button.setSoundEffectsEnabled(true);
 
         animate(button);
 

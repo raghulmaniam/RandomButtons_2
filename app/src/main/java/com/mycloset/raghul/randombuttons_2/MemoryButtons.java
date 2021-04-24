@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -85,9 +86,23 @@ public class MemoryButtons extends AppCompatActivity implements View.OnClickList
 TextView curLevelText;
 
     CountDownTimer timerCheck;
+    CountDownTimer countdownTimer;
 
 int BUTTON_SIZE = 200;
     GradientDrawable whiteshape, redShape;
+
+    volatile ImageView star;
+
+    MediaPlayer clickSound = null;
+    MediaPlayer defaultSound = null;
+    MediaPlayer exitSound = null;
+
+    MediaPlayer lightOn = null;
+    MediaPlayer lightOff = null;
+
+    volatile Boolean gameOver = false;
+
+
 
 
 
@@ -133,7 +148,15 @@ boolean isNewLevel = false;
 
         curLevelText = findViewById(R.id.mem_levelText);
 
-         whiteshape=  new GradientDrawable();
+        clickSound = MediaPlayer.create(this, R.raw.rand_click_wav);
+        defaultSound = MediaPlayer.create(this, R.raw.default_sound);
+        exitSound = MediaPlayer.create(this, R.raw.exit_sound);
+
+        lightOn = MediaPlayer.create(this, R.raw.light_on_sound);
+        lightOff = MediaPlayer.create(this, R.raw.light_off_sound);
+
+
+        whiteshape=  new GradientDrawable();
         whiteshape.setCornerRadius( 12 );
         whiteshape.setStroke(5,Color.BLACK);
 
@@ -145,7 +168,13 @@ boolean isNewLevel = false;
 
         redShape.setColor(Color.RED);
 
+        star = findViewById(R.id.mem_star);
+
+        star.setVisibility(View.GONE);
+
         showRulesDialog();
+
+
 
     }
 
@@ -153,6 +182,7 @@ boolean isNewLevel = false;
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.mem_dialogOkayButton: {
+
                 rulesDialog.dismiss();
 
                 layoutHeight = mainFrameLayout.getMeasuredHeight() -BUTTON_SIZE;
@@ -160,6 +190,7 @@ boolean isNewLevel = false;
                 //100 -> to negate button size
 
                 counterBeforeGame();
+
                 break;
             }
             /*case R.id.mem_mainGameLayout: {
@@ -169,9 +200,14 @@ boolean isNewLevel = false;
             }*/
             default: {
 
+                if(clickSound!= null)
+                    clickSound.start();
+
                 GradientDrawable shape =  new GradientDrawable();
                 shape.setCornerRadius( 12 );
                 shape.setStroke(5,Color.BLACK);
+
+
 
                 view.clearAnimation();
                 view.bringToFront();
@@ -198,9 +234,13 @@ boolean isNewLevel = false;
 
                 if(correctButtonsClicked.get() >= buttonsCount.get())
                 {
-                    customToast("New Level" +curLevel , Toast.LENGTH_SHORT);
+                    star.setVisibility(View.VISIBLE);
+                    rotate(star);
+                    //customToast("New Level" +curLevel , Toast.LENGTH_SHORT);
                     timerCheck.cancel();
-                    callNextLevel.run();
+                    mHandler.postDelayed(callNextLevel , 1000);
+                    //callNextLevel.run();
+
 
                 }
 
@@ -211,7 +251,17 @@ boolean isNewLevel = false;
         }
     }
 
-        public void showRulesDialog()
+    public void rotate(View view) {
+        Animation anim;
+        anim = AnimationUtils.loadAnimation(this, R.anim.rotate_and_fade);
+
+        anim.setDuration(1000);
+        anim.setRepeatCount(600);
+
+        view.startAnimation(anim);
+    }
+
+    public void showRulesDialog()
     {
         Button dialogOkay;
         rulesDialog = new Dialog(this);
@@ -227,6 +277,7 @@ boolean isNewLevel = false;
         window.setGravity(Gravity.CENTER);
         window.getAttributes().windowAnimations=R.style.DialogAnimation;
         window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+
         rulesDialog.show();
 
         dialogOkay.setOnClickListener(this);
@@ -243,7 +294,7 @@ boolean isNewLevel = false;
     }
 
     public void counterBeforeGame() {
-        new CountDownTimer(4000, 1000) {
+        countdownTimer =new CountDownTimer(4000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Long val = millisUntilFinished / 1000;
@@ -298,9 +349,16 @@ boolean isNewLevel = false;
         @Override
         public void run() {
 
+            star.clearAnimation();
+            star.setVisibility(View.GONE);
+
             if(bulbOn)
             {
                 isNewLevel = false;
+
+                if(lightOn!= null)
+                    lightOn.start();
+
                 //start to play
                 bulb.setImageResource(R.drawable.bulb_off);
                 bulbOn = false;
@@ -311,7 +369,8 @@ boolean isNewLevel = false;
                 timer_seconds = 0;
                 //timer.run();
                 gameTimer(curLevel.get());
-                customToast("Buld OFF" , Toast.LENGTH_SHORT);
+
+                //customToast("Buld OFF" , Toast.LENGTH_SHORT);
 
 
                 //mHandler.postDelayed(createButtonRunnable, 5000);
@@ -334,6 +393,9 @@ boolean isNewLevel = false;
 
                 showButtons();
 
+                if(lightOn!= null)
+                    lightOn.start();
+
                 bulb.setImageResource(R.drawable.bulb_on);
                 bulbOn = true;
                 bulbLayout.setBackgroundResource(R.drawable.curve2);
@@ -349,9 +411,11 @@ boolean isNewLevel = false;
                 correctButtonsClicked.set(0);
 
 
-
+                if(gameOver)
                 mHandler.postDelayed(callNextLevel, 5000);
+
                 countdownAfterGame();
+
             }
             //mHandler.postDelayed(createButtonRunnable, 5000);
 
@@ -538,6 +602,10 @@ boolean isNewLevel = false;
                                            @Override
                                            public void onClick(View view)
                                            {
+
+                                               if(defaultSound!= null)
+                                                   defaultSound.start();
+
                                                gameoverDialog.dismiss();
                                                Intent intent = new Intent(getApplicationContext(), MemoryButtons.class);
                                                startActivity(intent);
@@ -549,6 +617,10 @@ boolean isNewLevel = false;
                                           @Override
                                           public void onClick(View view)
                                           {
+
+                                              if(exitSound!= null)
+                                                  exitSound.start();
+
                                               Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                               startActivity(intent);
                                               gameoverDialog.dismiss();
@@ -702,8 +774,19 @@ boolean isNewLevel = false;
     @Override
     public void onBackPressed()
     {
+        gameOver= true;
+
+        if(exitSound!= null)
+            exitSound.start();
+
         super.onBackPressed();
-        timerCheck.cancel();
+
+        if(timerCheck!= null)
+            timerCheck.cancel();
+
+        if(countdownTimer!= null)
+            countdownTimer.cancel();
+
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
