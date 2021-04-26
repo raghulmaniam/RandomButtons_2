@@ -27,7 +27,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -36,36 +35,21 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import android.content.SharedPreferences.Editor;
 
-
 public class MemoryButtons extends AppCompatActivity implements View.OnClickListener {
 
 
     AtomicInteger curLevel = new AtomicInteger();
     AtomicInteger buttonsCount =new AtomicInteger();
-
     AtomicInteger score = new AtomicInteger();
-
     Dialog rulesDialog , gameoverDialog;
-
     private TextView counterValueMain;
-
     private FrameLayout mainFrameLayout ;
     private  RelativeLayout bulbLayout;
-
     volatile public Boolean bulbOn = false;
-
     int leftMargin, topMargin;
-
-    Random rnd = new Random();
-
     private Handler mHandler = new Handler();
-
     ImageView bulb;
-
-    Button odd1, odd2;
-
     List<Button> buttonsList = new ArrayList<>();
-
     TextView scoreText;
 
     public ProgressBar progressBarTime;
@@ -75,22 +59,15 @@ public class MemoryButtons extends AppCompatActivity implements View.OnClickList
 
     int timer_seconds = 0;
     AtomicInteger correctButtonsClicked = new AtomicInteger();
-
     int layoutHeight, layoutWidth;
-
-
     TextView dialogText;
-
     Button retryButton, exitButton;
-
-TextView curLevelText;
-
+    TextView curLevelText;
     CountDownTimer timerCheck;
     CountDownTimer countdownTimer;
 
-int BUTTON_SIZE = 200;
+    int BUTTON_SIZE = 200;
     GradientDrawable whiteshape, redShape;
-
     volatile ImageView star;
 
     MediaPlayer clickSound = null;
@@ -101,12 +78,9 @@ int BUTTON_SIZE = 200;
     MediaPlayer lightOff = null;
 
     volatile Boolean gameOver = false;
+    volatile Boolean backPressed = false;
 
-
-
-
-
-boolean isNewLevel = false;
+    boolean isNewLevel = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,27 +95,18 @@ boolean isNewLevel = false;
 
         setContentView(R.layout.activity_memory_buttons);
 
-
         counterValueMain = findViewById(R.id.mem_start_countdown);
 
         mainFrameLayout = findViewById(R.id.mem_mainGameLayout);
         bulbLayout = findViewById(R.id.mem_mainLayout);
 
-        //mainFrameLayout.setOnClickListener(this);
-
         score.set(0);
         correctButtonsClicked.set(5); //dont make it zero, first time check will fail
-
         buttonsCount.set(4);
-
         curLevel.set(1);
-
         bulb = findViewById(R.id.mem_bulb);
-
         scoreText = findViewById(R.id.mem_CounterTextView);
-
         scoreText.setText(Integer.toString(0));
-
 
         progressBarButtons = findViewById(R.id.mem_progressbar_buttons);
         progressBarTime = findViewById(R.id.mem_progressbar_time);
@@ -151,31 +116,22 @@ boolean isNewLevel = false;
         clickSound = MediaPlayer.create(this, R.raw.rand_click_wav);
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
-
         lightOn = MediaPlayer.create(this, R.raw.light_on_sound);
         lightOff = MediaPlayer.create(this, R.raw.light_off_sound);
-
 
         whiteshape=  new GradientDrawable();
         whiteshape.setCornerRadius( 12 );
         whiteshape.setStroke(5,Color.BLACK);
-
         whiteshape.setColor(Color.WHITE);
-
         redShape = new GradientDrawable();
         redShape.setCornerRadius( 12 );
         redShape.setStroke(5,Color.BLACK);
-
         redShape.setColor(Color.RED);
 
         star = findViewById(R.id.mem_star);
-
         star.setVisibility(View.GONE);
 
         showRulesDialog();
-
-
-
     }
 
     @Override
@@ -188,16 +144,9 @@ boolean isNewLevel = false;
                 layoutHeight = mainFrameLayout.getMeasuredHeight() -BUTTON_SIZE;
                 layoutWidth = mainFrameLayout.getMeasuredWidth() -BUTTON_SIZE;
                 //100 -> to negate button size
-
                 counterBeforeGame();
-
                 break;
             }
-            /*case R.id.mem_mainGameLayout: {
-                score.decrementAndGet();
-                scoreText.setText(Integer.toString(score.get()));
-                break;
-            }*/
             default: {
 
                 if(clickSound!= null)
@@ -207,12 +156,9 @@ boolean isNewLevel = false;
                 shape.setCornerRadius( 12 );
                 shape.setStroke(5,Color.BLACK);
 
-
-
                 view.clearAnimation();
                 view.bringToFront();
                 view.setOnClickListener(null);
-
                 view.setVisibility(View.VISIBLE);
 
                 if ((int) view.getTag() == 1) {
@@ -223,8 +169,6 @@ boolean isNewLevel = false;
 
                     score.incrementAndGet();
                     shape.setColor(Color.WHITE);
-
-
                 } else {
                     //wrong button
                     score.decrementAndGet();
@@ -236,28 +180,21 @@ boolean isNewLevel = false;
                 {
                     star.setVisibility(View.VISIBLE);
                     rotate(star);
-                    //customToast("New Level" +curLevel , Toast.LENGTH_SHORT);
                     timerCheck.cancel();
                     mHandler.postDelayed(callNextLevel , 1000);
-                    //callNextLevel.run();
-
-
                 }
 
                 view.setBackground(shape);
                 scoreText.setText(Integer.toString(score.get()));
-
             }
         }
     }
 
     public void rotate(View view) {
         Animation anim;
-        anim = AnimationUtils.loadAnimation(this, R.anim.rotate_and_fade);
-
+        anim = AnimationUtils.loadAnimation(this, R.anim.zoomin_fade);
         anim.setDuration(1000);
         anim.setRepeatCount(600);
-
         view.startAnimation(anim);
     }
 
@@ -276,21 +213,11 @@ boolean isNewLevel = false;
         Window window = rulesDialog.getWindow();
         window.setGravity(Gravity.CENTER);
         window.getAttributes().windowAnimations=R.style.DialogAnimation;
-        window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT);
 
         rulesDialog.show();
 
         dialogOkay.setOnClickListener(this);
-
-        /*dialogOkay.setOnClickListener(new View.OnClickListener(){
-                                          @Override
-                                          public void onClick(View view)
-                                          {
-                                              rulesDialog.dismiss();
-                                              counterBeforeGame();
-                                          }
-                                      }
-        );*/
     }
 
     public void counterBeforeGame() {
@@ -303,7 +230,6 @@ boolean isNewLevel = false;
 
             public void onFinish() {
                 counterValueMain.setVisibility(View.INVISIBLE);
-                customToast("Start" , Toast.LENGTH_SHORT);
                 startGame();
             }
         }.start();
@@ -320,29 +246,14 @@ boolean isNewLevel = false;
 
             public void onFinish() {
                 counterValueMain.setVisibility(View.INVISIBLE);
-                customToast("Start" , Toast.LENGTH_SHORT);
+                //customToast("Start" , Toast.LENGTH_SHORT);
                 //callNextLevel.run();
             }
         }.start();
     }
 
     public void startGame() {
-
-        //curLevel = 1;
-        //buttonCount = 5;
-
-       /* while(!gameOver)
-        {
-          for(int i = 0 ; i <buttonCount ; i++)
-              newButton(Color.WHITE);
-        }
-
-        newButton(Color.BLACK);
-        newButton(Color.BLACK);
-
-        countdownAfterGame();*/
         callNextLevel.run();
-
     }
 
     private Runnable callNextLevel = new Runnable() {
@@ -367,13 +278,7 @@ boolean isNewLevel = false;
                 setBaseColor(buttonsList);
 
                 timer_seconds = 0;
-                //timer.run();
                 gameTimer(curLevel.get());
-
-                //customToast("Buld OFF" , Toast.LENGTH_SHORT);
-
-
-                //mHandler.postDelayed(createButtonRunnable, 5000);
             }
             else
             {
@@ -403,22 +308,16 @@ boolean isNewLevel = false;
                 buttonsList.add(newButton(Color.RED));
                 buttonsList.add(newButton(Color.RED));
 
-
-
                 for (int i = 0; i < buttonsCount.get(); i++)
                     buttonsList.add(newButton(Color.WHITE));
 
                 correctButtonsClicked.set(0);
 
-
-                if(gameOver)
+                if(!gameOver)
                 mHandler.postDelayed(callNextLevel, 5000);
 
                 countdownAfterGame();
-
             }
-            //mHandler.postDelayed(createButtonRunnable, 5000);
-
         }
     };
 
@@ -432,14 +331,9 @@ boolean isNewLevel = false;
                     timeProgressInt = new BigDecimal(timer_seconds++).multiply(new BigDecimal(6.666)); //for 15 seconds
                     progressBarTime.setProgress(timeProgressInt.intValue());
                 }
-
-//                counterValueMain.setVisibility(View.VISIBLE);
-//                Long val = millisUntilFinished / 1000;
-//                counterValueMain.setText(Integer.toString(val.intValue()));
             }
 
             public void onFinish() {
-
 
                 if((correctButtonsClicked.get() < buttonsCount.get()) && !bulbOn && (passedLevel == curLevel.get()))
                 {
@@ -450,74 +344,7 @@ boolean isNewLevel = false;
                 }
             }
         }.start();
-
-
     }
-
-    /*private Runnable createButtonRunnable = new Runnable() {
-        @Override
-        public void run() {
-
-            if(bulbOn)
-            {
-                //start to play
-                bulb.setImageResource(R.drawable.bulb_off);
-                bulbOn = false;
-                bulbLayout.setBackgroundResource(R.drawable.box_curved);
-
-                setBaseColor(buttonsList);
-
-                timer_seconds = 0;
-                timer.run();
-
-
-                mHandler.postDelayed(createButtonRunnable, 5000);
-            }
-            else
-            {
-                //memorize
-                progressBarTime.setProgress(0);
-                progressBarButtons.setProgress(0);
-
-                if(correctButtonsClicked.get() < buttonsCount)
-                {
-                    gameOver = true;
-
-                    mainFrameLayout.setOnClickListener(null);
-                    gameover();
-                }
-                else {
-                    curLevelText.setText(Integer.toString(curLevel++));
-                    buttonsCount++;
-
-                    progressBarTime.setProgress(0);
-                    progressBarButtons.setProgress(0);
-
-                    clearButtons(buttonsList);
-                    bulb.setImageResource(R.drawable.bulb_on);
-                    bulbOn = true;
-                    bulbLayout.setBackgroundResource(R.drawable.curve2);
-
-                    buttonsList.add(newButton(Color.RED));
-                    buttonsList.add(newButton(Color.RED));
-
-
-
-                    for (int i = 0; i < buttonsCount; i++)
-                        buttonsList.add(newButton(Color.WHITE));
-
-                    correctButtonsClicked.set(0);
-
-
-
-                    mHandler.postDelayed(createButtonRunnable, 5000);
-                    countdownAfterGame();
-                }
-            }
-            //mHandler.postDelayed(createButtonRunnable, 5000);
-
-        }
-    };*/
 
     public Runnable timer = new Runnable() {
         @Override
@@ -527,7 +354,6 @@ boolean isNewLevel = false;
 
             if(timer_seconds<=10)
                 mHandler.postDelayed(timer, 5000);
-
         }
     };
 
@@ -535,7 +361,6 @@ boolean isNewLevel = false;
     {
         showLayout();
         showGameOverDialog();
-        //customToast("Game Over", Toast.LENGTH_SHORT);
     }
 
 
@@ -549,22 +374,6 @@ boolean isNewLevel = false;
 
     public void showButtons()
     {
-        /*for(Button button: buttons)
-        {
-            GradientDrawable shape =  new GradientDrawable();
-            shape.setCornerRadius( 12 );
-            shape.setStroke(5,Color.BLACK);
-            shape.setColor(Color.BLACK);
-
-            if((int) button.getTag() == 1)
-                shape.setColor(Color.WHITE);
-            else
-                shape.setColor(Color.RED);
-
-            button.setBackground(shape);
-            button.setVisibility(View.VISIBLE);
-        }*/
-
         whiteshape.setColor(Color.WHITE);
         redShape.setColor(Color.RED);
     }
@@ -575,12 +384,6 @@ boolean isNewLevel = false;
         gameoverDialog.setContentView(R.layout.rules_dialog_2);
         if(gameoverDialog.getWindow()!= null)
             gameoverDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-        //turtle = gameoverDialog.findViewById(R.id.turtle);
-        //turtle.setTag("open");
-        //turtleBlink.run();
-
-
 
         dialogText = gameoverDialog.findViewById(R.id.rulesText);
 
@@ -596,7 +399,14 @@ boolean isNewLevel = false;
         window.setGravity(Gravity.CENTER);
         window.getAttributes().windowAnimations=R.style.DialogAnimation;
         window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-        gameoverDialog.show();
+
+        try {
+            gameoverDialog.show();
+        }
+        catch (WindowManager.BadTokenException e)
+        {
+            //do nothing
+        }
 
         retryButton.setOnClickListener(new View.OnClickListener(){
                                            @Override
@@ -623,6 +433,8 @@ boolean isNewLevel = false;
 
                                               Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                               startActivity(intent);
+                                              overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
+
                                               gameoverDialog.dismiss();
                                           }
                                       }
@@ -648,12 +460,12 @@ boolean isNewLevel = false;
             }
 
             public void onFinish() {
-
                 //Just to be sure even if the above missed to make it Visible
                 retryButton.setVisibility(View.VISIBLE);
                 exitButton.setVisibility(View.VISIBLE);
 
-                ScoreDelegator(dialogText);
+                if(!backPressed)
+                    ScoreDelegator(dialogText);
             }
         }.start();
     }
@@ -671,9 +483,13 @@ boolean isNewLevel = false;
             editor.putInt("mem", finalScore);
             editor.apply();
             customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
+
+            ImageView star = gameoverDialog.findViewById(R.id.mem_star);
+            star.setVisibility(View.VISIBLE);
+            rotate(star);
         }
-        else
-            customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
+        //else
+          //  customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
 
         dialogText.setText(finalScoreString);
     }
@@ -692,17 +508,7 @@ boolean isNewLevel = false;
     {
         for(Button button: buttons)
         {
-            /*GradientDrawable shape =  new GradientDrawable();
-            shape.setCornerRadius( 12 );
-            shape.setStroke(5,Color.BLACK);
-            shape.setColor(Color.BLACK);
-
-            button.setBackground(shape);
-*/
-            /*button.clearAnimation();
-            button.setVisibility(View.INVISIBLE);*/
             button.setOnClickListener(this);
-
         }
 
         whiteshape.setColor(Color.BLACK);
@@ -738,36 +544,13 @@ boolean isNewLevel = false;
         Minimum: 1  Minimum: 400/500
         */
 
-        //height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
-        //width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
-
-        //leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
-        //topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
-
         leftMargin = randomParam.nextInt(layoutWidth);
         topMargin = randomParam.nextInt(layoutHeight-380) +380;
-
-        //topMargin = 380;
-
-        //int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-
-        // button.setBackgroundColor(color);
-
-        /*GradientDrawable shape =  new GradientDrawable();
-        shape.setCornerRadius( 12 );
-        shape.setStroke(5,Color.BLACK);
-
-        shape.setColor(color);*/
-
-
 
         LinearLayout.LayoutParams layoutparams = new LinearLayout.LayoutParams(BUTTON_SIZE, BUTTON_SIZE);
         layoutparams.setMargins(leftMargin, topMargin, 0, 0);
 
-
-
         mainFrameLayout.addView(button, layoutparams);
-
         return button;
     }
 
@@ -775,21 +558,27 @@ boolean isNewLevel = false;
     public void onBackPressed()
     {
         gameOver= true;
+        backPressed = true;
 
         if(exitSound!= null)
             exitSound.start();
 
         super.onBackPressed();
 
-        if(timerCheck!= null)
+        if(timerCheck!= null) {
             timerCheck.cancel();
+            timerCheck = null;
+        }
 
-        if(countdownTimer!= null)
+        if(countdownTimer!= null) {
             countdownTimer.cancel();
+            countdownTimer = null;
+        }
 
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
+        overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
     }
 
     public void customToast(String message, int length ) {
@@ -805,7 +594,6 @@ boolean isNewLevel = false;
 
         button.startAnimation(anim);
     }
-
 }
 
 

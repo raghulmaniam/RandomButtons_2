@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="title"><u>#RandomButtons</u></string>
+    <string name="title"><u><b>#RandomButtons</b></u></string>
 
     <string name="app_name">RandomButtons</string>
     <string name="title_activity_game">GameActivity</string>
@@ -11,6 +11,9 @@
     <string name="desc">Random Buttons Resources </string>>
     <string name="game2">Memory Buttons under Development.. Wait for the next patch... </string>>
 
+    <!-- Overridden values -->
+    <string name="rate_dialog_title">Rate Random Buttons</string>
+    <string name="rate_dialog_ok">RATE IT NOW :)</string>
 
     <string name="Time">Time </string>>
     <string name="Level">Level </string>>
@@ -20,5 +23,9 @@
     <string name="Speed">Speed</string>>
     <string name="bPerSec">b/sec</string>>
     <string name="sec">sec</string>>
+
+    <string name="GameList">Game List--</string>>
+
+    <string name="enter">Enter</string>>
 
 </resources>

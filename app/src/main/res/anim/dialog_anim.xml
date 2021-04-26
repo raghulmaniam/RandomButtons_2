@@ -4,12 +4,6 @@
     <translate
         android:fromYDelta="80%"
         android:toXDelta="0"
-
         >
-
-
     </translate>
-
-
-
 </set>

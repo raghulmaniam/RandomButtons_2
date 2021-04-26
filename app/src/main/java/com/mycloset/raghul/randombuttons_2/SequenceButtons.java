@@ -1,4 +1,5 @@
 package com.mycloset.raghul.randombuttons_2;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -8,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -28,54 +28,42 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import android.content.SharedPreferences.Editor;
 
 public class SequenceButtons extends Activity implements View.OnClickListener {
 
-      /*
+/*
 
 Developer: Raghul Subramaniam
 Email: raghulmaniam@gmail.com
 
- */
+*/
 
     Dialog rulesDialog , gameoverDialog;
     private FrameLayout mainFrameLayout;
-
     private TextView score, timeCounter;
-
     Button b1,b2,b3;
-
-    //int curSeq = 0;
     AtomicInteger curSeq = new AtomicInteger();
-
     AtomicInteger buttonSeq = new AtomicInteger();
-
-    int height, width, leftMargin, topMargin;
-
+    int leftMargin, topMargin;
     Random rnd = new Random();
-
     public ProgressBar progressBar;
     public BigDecimal progressInt;
-
     int timer_seconds = 0;
     TextView dialogText;
-
     Button retryButton, exitButton;
-
     Vibrator v;
-
     MediaPlayer clickSound = null;
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
-
     MediaPlayer tickFastSound = null;
+    CountDownTimer counterAfterGame;
+
+    volatile Boolean backPressed = false;
 
     private Handler mHandler = new Handler();
     public Runnable timer = new Runnable() {
@@ -89,19 +77,48 @@ Email: raghulmaniam@gmail.com
             if(timer_seconds<=60)
                 mHandler.postDelayed(timer, 1000);
             else
-            {
                 gameOver();
-            }
-
         }
     };
 
     @Override
     public void onBackPressed()
     {
+        backPressed = true;
 
-        if(tickFastSound!= null)
+        if(counterAfterGame!= null)
+        {
+            counterAfterGame.cancel();
+            counterAfterGame = null;
+        }
+
+        if(tickFastSound!= null) {
             tickFastSound.stop();
+        }
+
+        if(exitSound!= null)
+            exitSound.start();
+
+        super.onBackPressed();
+        finish();
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
+    }
+
+    /*@Override
+    protected void onStop()
+    {
+        super.onStop();
+
+        if(counterAfterGame!= null)
+        {
+            counterAfterGame.cancel();
+            counterAfterGame = null;
+        }
+
+        if(tickFastSound!= null) {
+            tickFastSound.stop();
+        }
 
         if(exitSound!= null)
             exitSound.start();
@@ -110,11 +127,12 @@ Email: raghulmaniam@gmail.com
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
-    }
+        overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
+
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //ImageView start;
 
         //--- To set Full Screen mode ---
         super.onCreate(savedInstanceState);
@@ -129,16 +147,9 @@ Email: raghulmaniam@gmail.com
         curSeq.set(1);
         buttonSeq.set(3);
 
-
-        //start = findViewById(R.id.start);
-        //start.setOnClickListener(this);
-        //start.setImageResource(R.mipmap.start);
-
-
         b1 = findViewById(R.id.seq_button1);
         b2 = findViewById(R.id.seq_button2);
         b3 = findViewById(R.id.seq_button3);
-
 
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
@@ -152,20 +163,16 @@ Email: raghulmaniam@gmail.com
         timeCounter = findViewById(R.id.seq_timeText);
 
         progressBar = findViewById(R.id.seq_progressbar);
-
         mainFrameLayout = findViewById(R.id.sequence_mainGameLayout);
 
         clickSound = MediaPlayer.create(this, R.raw.rand_click_wav);
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
-
         tickFastSound = MediaPlayer.create(this, R.raw.tick_fast);
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         showRulesDialog();
-
-
 
     }
 
@@ -213,15 +220,10 @@ Email: raghulmaniam@gmail.com
         Minimum: 1  Minimum: 400/500
         */
 
-        //height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
-        //width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 50) * 0.5) + 0.5f);
-
         leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
         topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
 
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-
-        // button.setBackgroundColor(color);
 
         GradientDrawable shape =  new GradientDrawable();
         shape.setCornerRadius( 12 );
@@ -270,7 +272,7 @@ Email: raghulmaniam@gmail.com
         Window window = rulesDialog.getWindow();
         window.setGravity(Gravity.CENTER);
         window.getAttributes().windowAnimations=R.style.DialogAnimation;
-        window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT);
         rulesDialog.show();
 
         dialogOkay.setOnClickListener(new View.OnClickListener(){
@@ -286,21 +288,15 @@ Email: raghulmaniam@gmail.com
         );
     }
 
-
-    public void startGame() {
-
+    public void startGame()
+    {
         buttonsBeforeGame();
-
-        //mainFrameLayout.setOnClickListener(this);
-
     }
-
 
     public void buttonsBeforeGame() {
         new CountDownTimer(2000, 500) {
 
             public void onTick(long millisUntilFinished) {
-
                 if( millisUntilFinished < 1600) {
                     if (millisUntilFinished > 1101 )
                         b1.setVisibility(View.VISIBLE);
@@ -312,7 +308,6 @@ Email: raghulmaniam@gmail.com
             }
 
             public void onFinish() {
-
                 //Just to be sure even if the above missed to make it Visible
                 b1.setVisibility(View.VISIBLE);
                 b2.setVisibility(View.VISIBLE);
@@ -320,7 +315,6 @@ Email: raghulmaniam@gmail.com
 
                 if(tickFastSound!= null)
                     tickFastSound.start();
-
             }
         }.start();
     }
@@ -343,12 +337,6 @@ Email: raghulmaniam@gmail.com
         if(gameoverDialog.getWindow()!= null)
             gameoverDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        //turtle = gameoverDialog.findViewById(R.id.turtle);
-        //turtle.setTag("open");
-        //turtleBlink.run();
-
-
-
         dialogText = gameoverDialog.findViewById(R.id.rulesText);
 
         retryButton = gameoverDialog.findViewById(R.id.dialogRetryButton);
@@ -364,7 +352,6 @@ Email: raghulmaniam@gmail.com
         window.getAttributes().windowAnimations=R.style.DialogAnimation;
         window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         gameoverDialog.show();
-
 
         retryButton.setOnClickListener(new View.OnClickListener(){
                                            @Override
@@ -391,6 +378,7 @@ Email: raghulmaniam@gmail.com
 
                                               Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                               startActivity(intent);
+                                              overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
                                               gameoverDialog.dismiss();
                                           }
                                       }
@@ -400,7 +388,7 @@ Email: raghulmaniam@gmail.com
     }
 
     public void counterAfterGame() {
-        new CountDownTimer(2000, 500) {
+        counterAfterGame = new CountDownTimer(2000, 500) {
 
             public void onTick(long millisUntilFinished) {
 
@@ -416,12 +404,12 @@ Email: raghulmaniam@gmail.com
             }
 
             public void onFinish() {
-
                 //Just to be sure even if the above missed to make it Visible
                 retryButton.setVisibility(View.VISIBLE);
                 exitButton.setVisibility(View.VISIBLE);
 
-                ScoreDelegator(dialogText);
+                if(!backPressed)
+                    ScoreDelegator(dialogText);
             }
         }.start();
     }
@@ -439,14 +427,22 @@ Email: raghulmaniam@gmail.com
             editor.putInt("seq", finalScore);
             editor.apply();
             customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
+
+            ImageView star = gameoverDialog.findViewById(R.id.mem_star);
+            star.setVisibility(View.VISIBLE);
+            rotate(star);
         }
-        else
-            customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
+        //else
+          //  customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
 
         dialogText.setText(finalScoreString);
     }
 
+    public void rotate(View view) {
+        Animation anim;
+        anim = AnimationUtils.loadAnimation(this, R.anim.zoomin_fade);
+        anim.setDuration(1000);
+        anim.setRepeatCount(600);
+        view.startAnimation(anim);
+    }
 }
-
-
-

@@ -17,17 +17,16 @@ import android.widget.*;
 import android.widget.LinearLayout.LayoutParams;
 import android.os.Handler;
 import android.os.CountDownTimer;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-
 import android.content.Context;
 import android.os.Vibrator;
 import android.view.animation.AnimationUtils;
 import android.graphics.*;
 import android.view.animation.Animation;
-
 import android.app.Activity;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -36,7 +35,7 @@ import android.content.SharedPreferences.Editor;
 
 public class MainGameActivity extends Activity implements View.OnClickListener {
 
-    /*
+/*
 
 Developer: Raghul Subramaniam
 Email: raghulmaniam@gmail.com
@@ -79,16 +78,17 @@ Email: raghulmaniam@gmail.com
     };
 
     Dialog rulesDialog , gameoverDialog;
-    ImageView turtle; //to refactor the variable name
 
     public ProgressBar progressBar;
     public BigDecimal progressInt;
 
     CountDownTimer timer;
+    CountDownTimer countDownBefore;
 
     Button retryButton, exitButton;
 
     volatile Boolean gameover = false;
+    volatile Boolean backPressed = false;
 
     MediaPlayer clickSound = null;
     MediaPlayer defaultSound = null;
@@ -97,8 +97,12 @@ Email: raghulmaniam@gmail.com
     public static int GAMECOUNTERLIMIT = 15;
     public static int INITIALDELAY = 1000;
 
-    //MediaPlayer dialogSound = null;
+    List<Integer> animList = new ArrayList<>();
 
+    int animListSize;
+    int curMode;
+
+    volatile  Boolean isModeGroovy = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +130,6 @@ Email: raghulmaniam@gmail.com
         secondTurtle = findViewById(R.id.secondTurtleImage);
         secondTurtle.setOnClickListener(this);
         secondTurtle.setTag("closed");
-        //secondTurtleBlink.run();
 
         mainFrameLayout = findViewById(R.id.mainGameLayout);
         progressBar = findViewById(R.id.progressbar);
@@ -155,8 +158,24 @@ Email: raghulmaniam@gmail.com
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
 
+        Intent intent = getIntent();
+        curMode = intent.getIntExtra("mode", 1);
 
-        //dialogSound = MediaPlayer.create(this, R.raw.dialog_okay);
+        if(curMode == 2)
+            isModeGroovy = true;
+
+        if(isModeGroovy) {
+            animList.add(R.anim.enter_fron_left);
+            animList.add(R.anim.enter_from_right);
+            animList.add(R.anim.bounce);
+            animList.add(R.anim.fadein);
+            animList.add(R.anim.dialog_anim);
+            animList.add(R.anim.rotate_right);
+            animList.add(R.anim.zoomout);
+            animList.add(R.anim.dialog_anim_down);
+
+            animListSize = animList.size();
+        }
 
         /*Width
         Minimum: 50 Maximum: 450
@@ -169,63 +188,6 @@ Email: raghulmaniam@gmail.com
         */
     }
 
-   /* private Runnable secondTurtleBlink = new Runnable() {
-        @Override
-        public void run() {
-            if (!isSecondTurtleClicked) {
-                if (secondTurtle.getTag().equals("open")) {
-                    secondTurtle.setImageResource(R.mipmap.turtle_ingame_2_closed);
-                    secondTurtle.setTag("closed");
-                } else {
-                    secondTurtle.setImageResource(R.mipmap.turtle_ingame_2);
-                    secondTurtle.setTag("open");
-                }
-
-                //two blinks.. pause.. one blink.. pause..
-
-                if (blinkDelay == 100) {
-                    blinkDelay = 110;
-                    //secondTurtle.setImageResource(R.mipmap.turtle_ingame_2_1);
-                    //secondTurtle.setTag("closed");
-                } else if (blinkDelay == 110)
-                    blinkDelay = 112;
-                else if (blinkDelay == 112 || blinkDelay == 810) {
-                    secondTurtle.setImageResource(R.mipmap.turtle_ingame_2);
-                    secondTurtle.setTag("open");
-                    blinkDelay = 1800;
-                } else if (blinkDelay == 1800)
-                    blinkDelay = 101;
-                else if (blinkDelay == 101)
-                    blinkDelay = 1801;
-                else if (blinkDelay == 1801)
-                    blinkDelay = 100;
-
-                mHandler.postDelayed(secondTurtleBlink, blinkDelay);
-            }
-        }
-
-    };*/
-
-    /*private Runnable wokeUpMessage = new Runnable() {
-        @Override
-        public void run() {
-
-            if (!isSecondTurtleClicked) {
-                isSecondTurtleClicked = true;
-                secondTurtle.setImageResource(R.mipmap.turtle_ingame);
-                //How can I wake my sleeping friend!
-                //secondTurtleText.setText("Hey.. Not me..!");
-                mHandler.postDelayed(wokeUpMessage, 2000);
-            } else {
-                secondTurtle.setImageResource(R.mipmap.turtle_ingame_2);
-                //secondTurtleText.setText("How can I wake my sleeping friend.. Hmmm..!");
-
-                isSecondTurtleClicked = false;
-                blinkDelay = 810;
-                //secondTurtleBlink.run();
-            }
-        }
-    };*/
     private Runnable createButtonRunnable = new Runnable() {
         @Override
         public void run() {
@@ -306,7 +268,6 @@ Email: raghulmaniam@gmail.com
                     }
                 }
 
-
                 if (counter < GAMECOUNTERLIMIT) {
 
                 /*
@@ -352,10 +313,8 @@ Email: raghulmaniam@gmail.com
         }
     };
 
-
     public void showRulesDialog()
     {
-
         Button dialogOkay;
         rulesDialog = new Dialog(this);
         rulesDialog.setContentView(R.layout.rules_dialog);
@@ -369,7 +328,7 @@ Email: raghulmaniam@gmail.com
         Window window = rulesDialog.getWindow();
         window.setGravity(Gravity.CENTER);
         window.getAttributes().windowAnimations=R.style.DialogAnimation;
-        window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        window.setLayout(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT);
         rulesDialog.show();
 
         dialogOkay.setOnClickListener(new View.OnClickListener(){
@@ -377,11 +336,7 @@ Email: raghulmaniam@gmail.com
             public void onClick(View view)
             {
                 rulesDialog.dismiss();
-                //dialogSound.start();
-
                 counterBeforeGame();
-
-                //startGame();
             }
         }
         );
@@ -416,7 +371,6 @@ Email: raghulmaniam@gmail.com
                 break;
             }
             case R.id.secondTurtleImage: {
-                //wokeUpMessage.run();
                 if(defaultSound!= null)
                     defaultSound.start();
 
@@ -450,8 +404,7 @@ Email: raghulmaniam@gmail.com
     }
 
     public void callLevelUpText() {
-        customToast("Level Up", Toast.LENGTH_SHORT);
-        //wokeUpMessage.run();
+        //customToast("Level Up", Toast.LENGTH_SHORT);
         levelUp();
     }
 
@@ -469,7 +422,7 @@ Email: raghulmaniam@gmail.com
     }
 
     public void counterBeforeGame() {
-        new CountDownTimer(4000, 1000) {
+        countDownBefore = new CountDownTimer(4000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Long val = millisUntilFinished / 1000;
@@ -478,7 +431,7 @@ Email: raghulmaniam@gmail.com
 
             public void onFinish() {
                 counterValueMain.setVisibility(View.GONE);
-                customToast("Start" , Toast.LENGTH_SHORT);
+                //customToast("Start" , Toast.LENGTH_SHORT);
                 startGame();
                 counterUpAfterGame.run();
             }
@@ -507,6 +460,7 @@ Email: raghulmaniam@gmail.com
                 retryButton.setVisibility(View.VISIBLE);
                 exitButton.setVisibility(View.VISIBLE);
 
+                if(!backPressed)
                 ScoreDelegator(dialogText);
             }
         }.start();
@@ -521,7 +475,6 @@ Email: raghulmaniam@gmail.com
             timer.onFinish();
 
         showGameOverDialog();
-
     }
 
     public void showGameOverDialog()
@@ -530,12 +483,6 @@ Email: raghulmaniam@gmail.com
         gameoverDialog.setContentView(R.layout.rules_dialog_2);
         if(gameoverDialog.getWindow()!= null)
             gameoverDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-        //turtle = gameoverDialog.findViewById(R.id.turtle);
-        //turtle.setTag("open");
-        //turtleBlink.run();
-
-
 
         dialogText = gameoverDialog.findViewById(R.id.rulesText);
 
@@ -578,6 +525,9 @@ Email: raghulmaniam@gmail.com
 
                                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                                startActivity(intent);
+
+                                               overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
+
                                                gameoverDialog.dismiss();
                                            }
                                        }
@@ -589,6 +539,12 @@ Email: raghulmaniam@gmail.com
     @Override
     public void onBackPressed()
     {
+        backPressed = true;
+
+        if(countDownBefore != null) {
+            countDownBefore.cancel();
+            countDownBefore= null;
+        }
 
         if(exitSound!= null)
             exitSound.start();
@@ -597,7 +553,7 @@ Email: raghulmaniam@gmail.com
         gameover= true;
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-
+        overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
     }
 
     public void ScoreDelegator(TextView dialogText){
@@ -613,45 +569,24 @@ Email: raghulmaniam@gmail.com
             editor.putInt("easy", finalScore);
             editor.apply();
             customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
+
+            ImageView star = gameoverDialog.findViewById(R.id.mem_star);
+            star.setVisibility(View.VISIBLE);
+            rotate(star);
         }
         else
-            customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
+            //customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
 
         dialogText.setText(finalScoreString);
     }
 
-    /*private Runnable turtleBlink = new Runnable() {
-        @Override
-        public void run() {
-            if (turtle.getTag().equals("open")) {
-                turtle.setImageResource(R.drawable.turtle_highscore_fullblink);
-                turtle.setTag("closed");
-            } else {
-                turtle.setImageResource(R.drawable.turtle_highscore_halfblink);
-                turtle.setTag("open");
-            }
-
-            //two blinks.. pause.. one blink.. pause..
-
-            if (blinkDelay == 100) {
-                blinkDelay = 110;
-            } else if (blinkDelay == 110)
-                blinkDelay = 112;
-            else if (blinkDelay == 112 || blinkDelay == 810) {
-                turtle.setImageResource(R.drawable.turtle_highscore_halfblink);
-                turtle.setTag("open");
-                blinkDelay = 1800;
-            } else if (blinkDelay == 1800)
-                blinkDelay = 101;
-            else if (blinkDelay == 101)
-                blinkDelay = 1801;
-            else if (blinkDelay == 1801)
-                blinkDelay = 100;
-
-            mHandler.postDelayed(turtleBlink, blinkDelay);
-
-        }
-    };*/
+    public void rotate(View view) {
+        Animation anim;
+        anim = AnimationUtils.loadAnimation(this, R.anim.zoomin_fade);
+        anim.setDuration(1000);
+        anim.setRepeatCount(600);
+        view.startAnimation(anim);
+    }
 
     public void customToast(String message, int length ) {
         Toast.makeText(getApplicationContext(), message, length).show();
@@ -664,7 +599,11 @@ Email: raghulmaniam@gmail.com
 
     public void animate(Button button) {
         Animation anim;
-        anim = AnimationUtils.loadAnimation(this, R.anim.fadein);
+
+        if(isModeGroovy)
+            anim = AnimationUtils.loadAnimation(this, animList.get(rnd.nextInt(animListSize )));
+        else
+            anim = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
         anim.setDuration(400);
         anim.setRepeatCount(1);
@@ -682,13 +621,10 @@ Email: raghulmaniam@gmail.com
         button.startAnimation(anim);
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     public void newButton() {
         final Button button = new Button(this);
         button.setOnClickListener(this);
-
-        //button.setSoundEffectsEnabled(true);
 
         animate(button);
 
@@ -707,19 +643,11 @@ Email: raghulmaniam@gmail.com
         height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 70) * 0.5) + 0.5f);
         width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 70) * 0.5) + 0.5f);
 
-        //leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
-        //topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
-
-        //leftMargin = layoutWidth-width;
-        //topMargin = layoutHeight - height;
-
         leftMargin = randomParam.nextInt(layoutWidth-width);
         topMargin = randomParam.nextInt(layoutHeight-height-240) +240;
         /* 240 - > to negate the height till the progress bar*/
 
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-
-       // button.setBackgroundColor(color);
 
         GradientDrawable shape =  new GradientDrawable();
         shape.setCornerRadius( 12 );
@@ -735,15 +663,12 @@ Email: raghulmaniam@gmail.com
         mainFrameLayout.addView(button, layoutparams);
     }
 
-
-
     public  void customAnimation (FrameLayout layout , int animType , int duration ){
 
         Animation anim = AnimationUtils.loadAnimation(this, animType);
         anim.setDuration(duration);
         anim.setRepeatCount(Animation.INFINITE);
         layout.startAnimation(anim);
-
     }
 }
 

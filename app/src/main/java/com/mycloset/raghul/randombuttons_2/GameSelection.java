@@ -1,46 +1,38 @@
 package com.mycloset.raghul.randombuttons_2;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 /*
 
 Developer: Raghul Subramaniam
 Email: raghulmaniam@gmail.com
 
- */
-
+*/
 
 import java.util.Random;
 
 public class GameSelection extends Activity implements View.OnClickListener {
 
-    Dialog rulesDialog;
     private Handler mHandler = new Handler();
     Random rnd = new Random();
     private FrameLayout mainFrameLayout;
     int width,height,leftMargin,topMargin,dummyButtonCounter ;
-    Button game1, game2 , game3;
+    Button game1, game2 , game3 , game1_groovy;
 
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
@@ -48,8 +40,6 @@ public class GameSelection extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
 
         //--- To set Full Screen mode ---
         super.onCreate(savedInstanceState);
@@ -64,6 +54,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
         game1 = findViewById(R.id.button_game1); //Random Buttons
         game2 = findViewById(R.id.button_game2); //Sequence Buttons
         game3 = findViewById(R.id.button_game3); //Memory Buttons
+        game1_groovy = findViewById(R.id.button_game1_groovy); //Random Buttons -Groovy
 
         mainFrameLayout = findViewById(R.id.dummyButtonLayout2);
 
@@ -73,6 +64,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
         game1.setOnClickListener(this);
         game2.setOnClickListener(this);
         game3.setOnClickListener(this);
+        game1_groovy.setOnClickListener(this);
 
         createButtonRunnable.run();
         rotate_right(mainFrameLayout, 70000);
@@ -99,7 +91,6 @@ public class GameSelection extends Activity implements View.OnClickListener {
 
     public void newButton() {
         Button button = new Button(this);
-        button.setBackgroundResource(R.drawable.button_selector);
 
         animate(button);
 
@@ -144,7 +135,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
         super.onBackPressed();
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-
+        overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
     }
 
 
@@ -158,8 +149,22 @@ public class GameSelection extends Activity implements View.OnClickListener {
                     defaultSound.start();
 
                 Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
+                intent.putExtra("mode" , 1);
                 startActivity(intent);
-                overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
+
+                overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
+                break;
+            }
+            case R.id.button_game1_groovy: {
+
+                if(defaultSound!= null)
+                    defaultSound.start();
+
+                Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
+                intent.putExtra("mode" , 2);
+                startActivity(intent);
+
+                overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
                 break;
             }
             case R.id.button_game2: {
@@ -170,22 +175,23 @@ public class GameSelection extends Activity implements View.OnClickListener {
 
                 Intent intent = new Intent(getApplicationContext(), SequenceButtons.class);
                 startActivity(intent);
-                //overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
+
+                overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
+
                 break;
             }
             case R.id.button_game3: {
-                //showRulesDialog();
 
                 if(defaultSound!= null)
                     defaultSound.start();
 
                 Intent intent = new Intent(getApplicationContext(), MemoryButtons.class);
                 startActivity(intent);
-                //overridePendingTransition(R.anim.fadein, R.anim.zoomin_activity);
+
+                overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
+
                 break;
             }
         }
     }
 }
-
-

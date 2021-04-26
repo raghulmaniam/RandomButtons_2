@@ -8,18 +8,21 @@
 
 
     <RelativeLayout
-        android:layout_width="320dp"
+        android:layout_width="match_parent"
         android:layout_height="270dp"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
         >
 
         <RelativeLayout
-            android:layout_width="320dp"
+            android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/drawable_dialogbox"
+
             >
 
             <TextView
@@ -32,20 +35,23 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
 
-                android:text=" When the light turns off, find all the White Buttons \n       Happy Clicking!  "
+                android:text=" When the light turns off, find all the White Buttons. \n       Happy Clicking!  "
                 android:textColor="@color/colorPrimary"
                 android:textSize="20dp"
                 android:textStyle="bold"></TextView>
 
             <Button
                 android:id="@+id/mem_dialogOkayButton"
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:fontFamily="@font/comic2"
                 android:text="Okeh ...!"
                 android:background="@drawable/rules_green"
                 android:textColor="@color/colorPrimary"
                 android:textStyle="bold"
-                android:textSize="15dp"
+                android:textSize="18dp"
                 android:textAllCaps="false"
                 android:layout_marginBottom="25dp"
                 android:layout_alignParentBottom="true"
