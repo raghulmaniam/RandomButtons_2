@@ -18,7 +18,7 @@
             android:useLevel="true"
             >
 
-            <solid android:color="@color/colorGrey"/>
+            <solid android:color="@color/design_default_color_primary_dark"/>
             <corners
 
                 android:bottomLeftRadius="0dp"

@@ -35,6 +35,8 @@ import com.google.android.gms.tasks.Task;
 
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import androidx.annotation.NonNull;
@@ -84,10 +86,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     boolean startupDone = false;
 
-    boolean googleClicked = false;
+    volatile boolean googleClicked = false;
 
     private String DIALOG_SIZE_SMALL="small";
     private String DIALOG_SIZE_LARGE="large";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +169,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         //mGoogleSignInClient = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).requestEmail().build();
 
         bulbOn = false;
+
+
 
         /*// Create the client used to sign in to Google services.
         mGoogleSignInClient = GoogleSignIn.getClient(this,
@@ -393,6 +398,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 
     public void animate(Button button) {
+
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.move);
 
         anim.setDuration(1000);
@@ -501,6 +507,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.globalHighscore:{
+
+                googleClicked = false;
 
                 if(mLeaderboardsClient!= null && isSignedIn() ) {
                     showLeaderboard();

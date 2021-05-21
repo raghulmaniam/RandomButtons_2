@@ -51,6 +51,8 @@ Email: raghulmaniam@gmail.com
     long speed;
     Bundle bundle;
     int curLevel = 0;
+
+    int FADEIN_DURATION= 10500;
     Random rnd = new Random();
 
     int layoutHeight, layoutWidth;
@@ -218,7 +220,7 @@ Email: raghulmaniam@gmail.com
                     case 0:
                     {
                         if(buttonsClickedForLevelChange>10) {
-                            customAnimation(mainFrameLayout, R.anim.fadein, 20500);
+                            customAnimation(mainFrameLayout, R.anim.fadein, FADEIN_DURATION);
                             callLevelUpText();
                             curLevel = 1;
                         }
@@ -239,7 +241,7 @@ Email: raghulmaniam@gmail.com
                     {
 
                         if(buttonsClickedForLevelChange>50) {
-                            customAnimation(mainFrameLayout, R.anim.fadein, 20500);
+                            customAnimation(mainFrameLayout, R.anim.fadein, FADEIN_DURATION);
                             callLevelUpText();
                             curLevel = 3;
                         }
@@ -260,7 +262,7 @@ Email: raghulmaniam@gmail.com
                     case 4:
                     {
                         if(buttonsClickedForLevelChange>90){
-                            customAnimation(mainFrameLayout, R.anim.fadein, 20500);
+                            customAnimation(mainFrameLayout, R.anim.fadein, FADEIN_DURATION);
                             callLevelUpText();
                             curLevel = 5;
                         }
