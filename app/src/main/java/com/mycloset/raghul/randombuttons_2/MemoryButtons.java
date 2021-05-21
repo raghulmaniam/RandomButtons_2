@@ -2,6 +2,7 @@ package com.mycloset.raghul.randombuttons_2;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -35,7 +35,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import android.content.SharedPreferences.Editor;
 
-public class MemoryButtons extends AppCompatActivity implements View.OnClickListener {
+public class MemoryButtons extends Activity implements View.OnClickListener {
 
 
     AtomicInteger curLevel = new AtomicInteger();

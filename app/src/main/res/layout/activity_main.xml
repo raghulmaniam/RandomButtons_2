@@ -34,6 +34,21 @@
         android:fontFamily="@font/comic7"
         android:textColor="@color/colorBlack"/>
 
+    <!--<TextView
+        android:id="@+id/globalHighscore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/comic2"
+        android:text="Global Ranking"
+        android:textSize="20dp"
+        android:layout_marginBottom="240dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/colorPrimary"
+        >
+
+    </TextView>
+
 
     <TextView
         android:id="@+id/highscore"
@@ -48,24 +63,24 @@
         android:textColor="@color/colorPrimary"
         >
 
-    </TextView>
+    </TextView>-->
 
-    <TextView
+   <!-- <TextView
         android:id="@+id/enter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/comic2"
         android:text="@string/enter"
-        android:textSize="60dp"
+        android:textSize="45dp"
         android:layout_marginBottom="115dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:textColor="@color/colorPrimary"
         >
 
-    </TextView>
+    </TextView> -->
 
-    <TextView
+   <!-- <TextView
         android:id="@+id/about"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -91,7 +106,83 @@
         android:textColor="@color/colorPrimary"
         >
 
-    </TextView>
+    </TextView>-->
+
+    <ImageView
+        android:id="@+id/enter"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/start"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="125dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_weight="1.0"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:id="@+id/googleLogin"
+            android:layout_weight="1.0"
+            android:src="@drawable/google"
+
+            android:layout_margin="10dp"
+
+            />
+
+        <ImageView
+            android:id="@+id/globalHighscore"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:src="@drawable/podium_enabled"
+            android:layout_margin="10dp"
+            />
+
+
+
+
+
+        <ImageView
+            android:id="@+id/score"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:src="@drawable/score"
+            android:layout_margin="10dp"
+            />
+
+
+        <ImageView
+            android:id="@+id/about"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:src="@drawable/info"
+            android:layout_margin="10dp"
+            />
+
+        <ImageView
+            android:id="@+id/exit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0"
+            android:src="@drawable/exit"
+            android:layout_margin="10dp"
+            />
+
+
+    </LinearLayout>>
+
+
 
 
 
@@ -104,8 +195,6 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="52dp"
         android:alpha="0.4"
-
-
         android:visibility="visible"
 >
 

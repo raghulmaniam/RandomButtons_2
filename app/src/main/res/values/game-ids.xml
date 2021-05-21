@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Google Play game services IDs. Save this file as res/values/games-ids.xml in your project.-->
+<resources>
+    <!--app_id-->
+    <string name="app_id" translatable="false">823240313860</string>
+    <!--package_name-->
+    <string name="package_name" translatable="false">com.mycloset.raghul.randombuttons_2</string>
+    <!--leaderboard Random Buttons-->
+    <string name="leaderboard_random_buttons" translatable="false">CgkIhJjJ5_oXEAIQAQ</string>
+</resources>

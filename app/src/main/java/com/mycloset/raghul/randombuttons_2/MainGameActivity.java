@@ -574,8 +574,9 @@ Email: raghulmaniam@gmail.com
             star.setVisibility(View.VISIBLE);
             rotate(star);
         }
-        else
+        else {
             //customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
+        }
 
         dialogText.setText(finalScoreString);
     }
