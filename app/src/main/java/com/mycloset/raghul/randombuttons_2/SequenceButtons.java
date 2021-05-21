@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import android.content.SharedPreferences.Editor;
@@ -72,7 +73,8 @@ Email: raghulmaniam@gmail.com
             progressInt = new BigDecimal(timer_seconds++).divide(new BigDecimal(60), 2 , RoundingMode.UP).multiply(new BigDecimal(100));
             progressBar.setProgress(progressInt.intValue());
 
-            timeCounter.setText(Integer.toString(timer_seconds));
+            timeCounter.setText(String.format(Locale.getDefault(), "%d" , timer_seconds));
+            //timeCounter.setText(Integer.toString(timer_seconds));
 
             if(timer_seconds<=60)
                 mHandler.postDelayed(timer, 1000);
@@ -86,6 +88,7 @@ Email: raghulmaniam@gmail.com
     {
         backPressed = true;
 
+        //to stop all the background threads of this game
         if(counterAfterGame!= null)
         {
             counterAfterGame.cancel();
@@ -104,32 +107,6 @@ Email: raghulmaniam@gmail.com
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
     }
-
-    /*@Override
-    protected void onStop()
-    {
-        super.onStop();
-
-        if(counterAfterGame!= null)
-        {
-            counterAfterGame.cancel();
-            counterAfterGame = null;
-        }
-
-        if(tickFastSound!= null) {
-            tickFastSound.stop();
-        }
-
-        if(exitSound!= null)
-            exitSound.start();
-
-        super.onBackPressed();
-        finish();
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-
-        overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
-
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +132,7 @@ Email: raghulmaniam@gmail.com
         b2.setOnClickListener(this);
         b3.setOnClickListener(this);
 
+        //base sequence
         b1.setTag(1);
         b2.setTag(2);
         b3.setTag(3);
@@ -173,26 +151,28 @@ Email: raghulmaniam@gmail.com
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         showRulesDialog();
-
     }
 
     @Override
     public void onClick(View view) {
 
+        //validate the sequence
         if(curSeq.get() == (Integer)view.getTag())
         {
             if(clickSound!=null)
                 clickSound.start();
 
+            //next button
             newButton();
             removeButton(view);
             curSeq.incrementAndGet();
-            score.setText(Integer.toString(curSeq.get()));
+            score.setText(String.format(Locale.getDefault(), "%d" , curSeq.get()));
+            //score.setText(Integer.toString(curSeq.get()));
         }
-        else
+        /*else
         {
             //customToast("GameOver" , Toast.LENGTH_SHORT);
-        }
+        }*/
     }
 
     public void customToast(String message, int length ) {
@@ -203,6 +183,7 @@ Email: raghulmaniam@gmail.com
     public void newButton() {
         final Button button = new Button(this);
 
+        //apply the immediate next sequence
         button.setTag(buttonSeq.incrementAndGet());
         button.setOnClickListener(this);
 
@@ -220,6 +201,7 @@ Email: raghulmaniam@gmail.com
         Minimum: 1  Minimum: 400/500
         */
 
+        //button position based on the phone dimensions
         leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(320) + 10) * 0.8) + 0.5f);
         topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(460) + 10) * 0.8) + 0.5f);
 
@@ -393,10 +375,10 @@ Email: raghulmaniam@gmail.com
             public void onTick(long millisUntilFinished) {
 
                 if( millisUntilFinished < 1600) {
-                    if (millisUntilFinished > 1101 ) {
+                    /*if (millisUntilFinished > 1101 ) {
                      //   retry.setVisibility(View.VISIBLE);
                     }
-                    else if (millisUntilFinished > 601)
+                    else */if (millisUntilFinished > 601)
                         retryButton.setVisibility(View.VISIBLE);
                     else if (millisUntilFinished > 1)
                         exitButton.setVisibility(View.VISIBLE);
@@ -409,12 +391,12 @@ Email: raghulmaniam@gmail.com
                 exitButton.setVisibility(View.VISIBLE);
 
                 if(!backPressed)
-                    ScoreDelegator(dialogText);
+                    DelegateScores(dialogText);
             }
         }.start();
     }
 
-    public void ScoreDelegator(TextView dialogText){
+    public void DelegateScores(TextView dialogText){
 
         SharedPreferences prefs = this.getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
             int highScoreEasy = prefs.getInt("seq", 0); //0 is the default value

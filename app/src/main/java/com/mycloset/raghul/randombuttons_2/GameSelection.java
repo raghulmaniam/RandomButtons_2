@@ -1,7 +1,6 @@
 package com.mycloset.raghul.randombuttons_2;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -66,7 +65,10 @@ public class GameSelection extends Activity implements View.OnClickListener {
         game3.setOnClickListener(this);
         game1_groovy.setOnClickListener(this);
 
+        //To create and animate dummy buttons
         createButtonRunnable.run();
+
+        //to rotate the entire layout along with the buttons
         rotate_right(mainFrameLayout, 70000);
 
     }
@@ -77,6 +79,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
             newButton();
             dummyButtonCounter++;
 
+            //keeping the count less than 50 to maintain the performance
             if(dummyButtonCounter<50)
                 mHandler.postDelayed(createButtonRunnable, 800);
         }
@@ -96,12 +99,15 @@ public class GameSelection extends Activity implements View.OnClickListener {
 
         Random randomParam = new Random();
 
+        //button dimensions
         height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(25) + 50) * 0.5) + 0.5f);
         width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(50) + 50) * 0.5) + 0.5f);
 
+        //button position
         leftMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(260) + 10) * 0.8) + 0.5f);
         topMargin = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(380) + 10) * 0.8) + 0.5f);
 
+        //random color
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
         GradientDrawable shape =  new GradientDrawable();
@@ -111,10 +117,10 @@ public class GameSelection extends Activity implements View.OnClickListener {
         shape.setColor(color);
         button.setBackground(shape);
 
-        LinearLayout.LayoutParams layoutparams = new LinearLayout.LayoutParams(width, height);
-        layoutparams.setMargins(leftMargin, topMargin, 0, 0);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
+        layoutParams.setMargins(leftMargin, topMargin, 0, 0);
 
-        mainFrameLayout.addView(button, layoutparams);
+        mainFrameLayout.addView(button, layoutParams);
     }
 
     public void animate(Button button) {
@@ -122,7 +128,6 @@ public class GameSelection extends Activity implements View.OnClickListener {
 
         anim.setDuration(4000);
         anim.setRepeatCount(1);
-
         button.startAnimation(anim);
     }
 
@@ -149,7 +154,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
                     defaultSound.start();
 
                 Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
-                intent.putExtra("mode" , 1);
+                intent.putExtra("mode" , 1); //classic game
                 startActivity(intent);
 
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
@@ -161,7 +166,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
                     defaultSound.start();
 
                 Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
-                intent.putExtra("mode" , 2);
+                intent.putExtra("mode" , 2); //groovy mode
                 startActivity(intent);
 
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
@@ -173,6 +178,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
                 if(defaultSound!= null)
                     defaultSound.start();
 
+                //sequence buttons
                 Intent intent = new Intent(getApplicationContext(), SequenceButtons.class);
                 startActivity(intent);
 
@@ -185,6 +191,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
                 if(defaultSound!= null)
                     defaultSound.start();
 
+                //memory buttons
                 Intent intent = new Intent(getApplicationContext(), MemoryButtons.class);
                 startActivity(intent);
 

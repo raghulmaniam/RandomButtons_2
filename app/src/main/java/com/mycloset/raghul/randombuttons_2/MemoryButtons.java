@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import android.content.SharedPreferences.Editor;
@@ -106,7 +107,8 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
         curLevel.set(1);
         bulb = findViewById(R.id.mem_bulb);
         scoreText = findViewById(R.id.mem_CounterTextView);
-        scoreText.setText(Integer.toString(0));
+        scoreText.setText(String.format(Locale.getDefault(), "%d" , 0));
+        //scoreText.setText(Integer.toString(0));
 
         progressBarButtons = findViewById(R.id.mem_progressbar_buttons);
         progressBarTime = findViewById(R.id.mem_progressbar_time);
@@ -136,7 +138,61 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
+        //case replaced with if..else since we have only two conditions
+        if(view.getId() == R.id.mem_dialogOkayButton)
+        {
+            rulesDialog.dismiss();
+
+            layoutHeight = mainFrameLayout.getMeasuredHeight() -BUTTON_SIZE;
+            layoutWidth = mainFrameLayout.getMeasuredWidth() -BUTTON_SIZE;
+            //100 -> to negate button size
+            counterBeforeGame();
+        }
+        else
+        {
+            {
+                if(clickSound!= null)
+                    clickSound.start();
+
+                GradientDrawable shape =  new GradientDrawable();
+                shape.setCornerRadius( 12 );
+                shape.setStroke(5,Color.BLACK);
+
+                view.clearAnimation();
+                view.bringToFront();
+                view.setOnClickListener(null);
+                view.setVisibility(View.VISIBLE);
+
+                if ((int) view.getTag() == 1) {
+                    //correct button
+
+                    buttonsProgressInt = new BigDecimal(correctButtonsClicked.incrementAndGet()).divide(new BigDecimal(buttonsCount.get()), 2 , RoundingMode.UP).multiply(new BigDecimal(100));
+                    progressBarButtons.setProgress(buttonsProgressInt.intValue());
+
+                    score.incrementAndGet();
+                    shape.setColor(Color.WHITE);
+                } else {
+                    //wrong button
+                    score.decrementAndGet();
+                    score.decrementAndGet();
+                    shape.setColor(Color.RED);
+                }
+
+                if(correctButtonsClicked.get() >= buttonsCount.get())
+                {
+                    //next level
+                    star.setVisibility(View.VISIBLE);
+                    rotate(star);
+                    timerCheck.cancel();
+                    mHandler.postDelayed(callNextLevel , 1000);
+                }
+
+                view.setBackground(shape);
+                scoreText.setText(String.format(Locale.getDefault(), "%d" , score.get()));
+                //scoreText.setText(Integer.toString(score.get()));
+            }
+        }
+        /*switch(view.getId()) {
             case R.id.mem_dialogOkayButton: {
 
                 rulesDialog.dismiss();
@@ -187,7 +243,7 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
                 view.setBackground(shape);
                 scoreText.setText(Integer.toString(score.get()));
             }
-        }
+        }*/
     }
 
     public void rotate(View view) {
@@ -222,10 +278,11 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
 
     public void counterBeforeGame() {
         countdownTimer =new CountDownTimer(4000, 1000) {
-
+            Long val;
             public void onTick(long millisUntilFinished) {
-                Long val = millisUntilFinished / 1000;
-                counterValueMain.setText(Integer.toString(val.intValue()));
+                val = millisUntilFinished / 1000;
+                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , val.intValue()));
+                //counterValueMain.setText(Integer.toString(val.intValue()));
             }
 
             public void onFinish() {
@@ -237,11 +294,12 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
 
     public void countdownAfterGame() {
         new CountDownTimer(5000, 1000) {
-
+            Long val;
             public void onTick(long millisUntilFinished) {
                 counterValueMain.setVisibility(View.VISIBLE);
-                Long val = millisUntilFinished / 1000;
-                counterValueMain.setText(Integer.toString(val.intValue()));
+                val = millisUntilFinished / 1000;
+                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , val.intValue()));
+                //counterValueMain.setText(Integer.toString(val.intValue()));
             }
 
             public void onFinish() {
@@ -286,12 +344,14 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
                 progressBarTime.setProgress(0);
                 progressBarButtons.setProgress(0);
 
-                curLevelText.setText(Integer.toString(curLevel.getAndIncrement()));
+                curLevelText.setText(String.format(Locale.getDefault(), "%d" , curLevel.getAndIncrement()));
+                //curLevelText.setText(Integer.toString(curLevel.getAndIncrement()));
                 buttonsCount.incrementAndGet();
 
                 progressBarTime.setProgress(0);
                 progressBarButtons.setProgress(0);
 
+                //clearing the buttons from previous level
                 clearButtons(buttonsList);
 
                 buttonsList.clear();
@@ -305,16 +365,18 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
                 bulbOn = true;
                 bulbLayout.setBackgroundResource(R.drawable.curve2);
 
+                //two red buttons for every level --negative score
                 buttonsList.add(newButton(Color.RED));
                 buttonsList.add(newButton(Color.RED));
 
+                //creating white buttons
                 for (int i = 0; i < buttonsCount.get(); i++)
                     buttonsList.add(newButton(Color.WHITE));
 
                 correctButtonsClicked.set(0);
 
                 if(!gameOver)
-                mHandler.postDelayed(callNextLevel, 5000);
+                    mHandler.postDelayed(callNextLevel, 5000);
 
                 countdownAfterGame();
             }
@@ -340,7 +402,7 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
                     progressBarTime.setProgress(100);
 
                     mainFrameLayout.setOnClickListener(null);
-                    gameover();
+                    gameOver();
                 }
             }
         }.start();
@@ -357,9 +419,12 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
         }
     };
 
-    public  void gameover()
+    public  void gameOver()
     {
+        //make all the buttons visible and turn on the light
         showLayout();
+
+        //display the score
         showGameOverDialog();
     }
 
@@ -374,6 +439,7 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
 
     public void showButtons()
     {
+        //color reset
         whiteshape.setColor(Color.WHITE);
         redShape.setColor(Color.RED);
     }
@@ -449,10 +515,10 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
             public void onTick(long millisUntilFinished) {
 
                 if( millisUntilFinished < 1600) {
-                    if (millisUntilFinished > 1101 ) {
+                    /*if (millisUntilFinished > 1101 ) {
                         //retry.setVisibility(View.VISIBLE);
                     }
-                    else if (millisUntilFinished > 601)
+                    else */if (millisUntilFinished > 601)
                         retryButton.setVisibility(View.VISIBLE);
                     else if (millisUntilFinished > 1)
                         exitButton.setVisibility(View.VISIBLE);
@@ -511,6 +577,7 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
             button.setOnClickListener(this);
         }
 
+        //setting all the button colors to black
         whiteshape.setColor(Color.BLACK);
         redShape.setColor(Color.BLACK);
 
@@ -560,6 +627,7 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
         gameOver= true;
         backPressed = true;
 
+        //to stop all the background threads of this game
         if(exitSound!= null)
             exitSound.start();
 

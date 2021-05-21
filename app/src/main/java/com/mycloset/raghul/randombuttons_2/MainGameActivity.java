@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import android.content.Context;
 import android.os.Vibrator;
@@ -46,13 +47,13 @@ Email: raghulmaniam@gmail.com
     TextView dialogText;
     private FrameLayout mainFrameLayout;
 
-    private Integer counterUpTimer = 0,blinkDelay = 100, counterBeforeGameValue =3 ;
+    private Integer counterUpTimer = 0, counterBeforeGameValue =3 ;
     int counter, totalButtons,buttonsClicked, buttonsClickedForLevelChange,delayInMS , width,height ,leftMargin,topMargin ;
     long speed;
     Bundle bundle;
     int curLevel = 0;
 
-    int FADEIN_DURATION= 10500;
+    int FADE_IN_DURATION = 10500;
     Random rnd = new Random();
 
     int layoutHeight, layoutWidth;
@@ -62,8 +63,9 @@ Email: raghulmaniam@gmail.com
     public Runnable counterUpAfterGame = new Runnable() {
         @Override
         public void run() {
-            timeCounter.setText(Integer.toString(++counterUpTimer));
-            if(!gameover)
+            timeCounter.setText(String.format(Locale.getDefault(), "%d" , ++counterUpTimer));
+            //timeCounter.setText(Integer.toString(++counterUpTimer));
+            if(!gameOver)
             mHandler.postDelayed(counterUpAfterGame, 1000);
         }
     };
@@ -89,15 +91,15 @@ Email: raghulmaniam@gmail.com
 
     Button retryButton, exitButton;
 
-    volatile Boolean gameover = false;
+    volatile Boolean gameOver = false;
     volatile Boolean backPressed = false;
 
     MediaPlayer clickSound = null;
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
 
-    public static int GAMECOUNTERLIMIT = 15;
-    public static int INITIALDELAY = 1000;
+    public static int GAME_COUNTER_LIMIT = 15;
+    public static int INITIAL_DELAY = 1000;
 
     List<Integer> animList = new ArrayList<>();
 
@@ -147,10 +149,13 @@ Email: raghulmaniam@gmail.com
 
         timeCounter.setTextColor(Color.RED);
 
-        delayInMS = INITIALDELAY;
-        score.setText(Integer.toString(buttonsClicked));
-        buttonSpeedView.setText(Long.toString(0));
-        counterValue.setText(Integer.toString(buttonsClicked));
+        delayInMS = INITIAL_DELAY;
+        score.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
+        //score.setText(Integer.toString(buttonsClicked));
+        buttonSpeedView.setText(String.format(Locale.getDefault(), "%d" , 0));
+        //buttonSpeedView.setText(Long.toString(0));
+        counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
+        //counterValue.setText(Integer.toString(buttonsClicked));
 
         start = findViewById(R.id.start);
         start.setOnClickListener(this);
@@ -194,14 +199,16 @@ Email: raghulmaniam@gmail.com
         @Override
         public void run() {
 
-            if (!gameover) {
-                counterValue.setText(Integer.toString(counter));
+            if (!gameOver) {
+                counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
+                //counterValue.setText(Integer.toString(counter));
 
                 newButton();
 
                 totalButtons++;
                 counter++;
-                counterValue.setText(Integer.toString(counter));
+                counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
+                //counterValue.setText(Integer.toString(counter));
 
                 progressInt = new BigDecimal(counter).divide(new BigDecimal(15), 2 , RoundingMode.UP).multiply(new BigDecimal(100));
                 progressBar.setProgress(progressInt.intValue());
@@ -220,7 +227,7 @@ Email: raghulmaniam@gmail.com
                     case 0:
                     {
                         if(buttonsClickedForLevelChange>10) {
-                            customAnimation(mainFrameLayout, R.anim.fadein, FADEIN_DURATION);
+                            customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
                             callLevelUpText();
                             curLevel = 1;
                         }
@@ -239,9 +246,8 @@ Email: raghulmaniam@gmail.com
 
                     case 2:
                     {
-
                         if(buttonsClickedForLevelChange>50) {
-                            customAnimation(mainFrameLayout, R.anim.fadein, FADEIN_DURATION);
+                            customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
                             callLevelUpText();
                             curLevel = 3;
                         }
@@ -262,7 +268,7 @@ Email: raghulmaniam@gmail.com
                     case 4:
                     {
                         if(buttonsClickedForLevelChange>90){
-                            customAnimation(mainFrameLayout, R.anim.fadein, FADEIN_DURATION);
+                            customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
                             callLevelUpText();
                             curLevel = 5;
                         }
@@ -270,7 +276,7 @@ Email: raghulmaniam@gmail.com
                     }
                 }
 
-                if (counter < GAMECOUNTERLIMIT) {
+                if (counter < GAME_COUNTER_LIMIT) {
 
                 /*
                 Setting Delay from Counter Value
@@ -297,16 +303,17 @@ Email: raghulmaniam@gmail.com
                     //Number of buttons per second
                     speed = (1000) / (delayInMS);
 
-                    buttonSpeedView.setText(Long.toString(speed));
+                    buttonSpeedView.setText(String.format(Locale.getDefault(), "%d" , speed));
+                    //buttonSpeedView.setText(Long.toString(speed));
                     mHandler.postDelayed(createButtonRunnable, delayInMS);
                 } else {
-                    gameover = true;
+                    gameOver = true;
                     gameOver();
                 }
 
             } else {
                 if (counterValue.getText().toString().equals("0") || counter < 0) {
-                    gameover = true;
+                    gameOver = true;
                     gameOver();
                 }
                 else
@@ -368,8 +375,10 @@ Email: raghulmaniam@gmail.com
                     v.vibrate(50);
 
                 buttonsClicked--;
-                score.setText(Integer.toString(buttonsClicked));
-                counterValueMain.setText(Integer.toString(buttonsClicked));
+                score.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
+                //score.setText(Integer.toString(buttonsClicked));
+                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
+                //counterValueMain.setText(Integer.toString(buttonsClicked));
                 break;
             }
             case R.id.secondTurtleImage: {
@@ -387,11 +396,14 @@ Email: raghulmaniam@gmail.com
                     clickSound.start();
 
                 counter--;
-                counterValue.setText(Integer.toString(counter));
+                counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
+                //counterValue.setText(Integer.toString(counter));
                 buttonsClicked++;
                 buttonsClickedForLevelChange++;
-                score.setText(Integer.toString(buttonsClicked));
-                counterValueMain.setText(Integer.toString(buttonsClicked));
+                score.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
+                //score.setText(Integer.toString(buttonsClicked));
+                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
+                //counterValueMain.setText(Integer.toString(buttonsClicked));
                 break;
             }
         }
@@ -406,7 +418,6 @@ Email: raghulmaniam@gmail.com
     }
 
     public void callLevelUpText() {
-        //customToast("Level Up", Toast.LENGTH_SHORT);
         levelUp();
     }
 
@@ -426,9 +437,11 @@ Email: raghulmaniam@gmail.com
     public void counterBeforeGame() {
         countDownBefore = new CountDownTimer(4000, 1000) {
 
+            Long val;
             public void onTick(long millisUntilFinished) {
-                Long val = millisUntilFinished / 1000;
-                counterValueMain.setText(Integer.toString(val.intValue()));
+                val = millisUntilFinished / 1000;
+                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , val.intValue()));
+                //counterValueMain.setText(Integer.toString(val.intValue()));
             }
 
             public void onFinish() {
@@ -446,10 +459,10 @@ Email: raghulmaniam@gmail.com
             public void onTick(long millisUntilFinished) {
 
                 if( millisUntilFinished < 1600) {
-                    if (millisUntilFinished > 1101 ) {
+                    /*if(millisUntilFinished > 1101 ) {
                         //retry.setVisibility(View.VISIBLE);
                     }
-                    else if (millisUntilFinished > 601)
+                    else */if (millisUntilFinished > 601)
                         retryButton.setVisibility(View.VISIBLE);
                     else if (millisUntilFinished > 1)
                         exitButton.setVisibility(View.VISIBLE);
@@ -463,7 +476,7 @@ Email: raghulmaniam@gmail.com
                 exitButton.setVisibility(View.VISIBLE);
 
                 if(!backPressed)
-                ScoreDelegator(dialogText);
+                    delegateScores(dialogText);
             }
         }.start();
     }
@@ -543,6 +556,7 @@ Email: raghulmaniam@gmail.com
     {
         backPressed = true;
 
+        //to stop all the running threads of this game
         if(countDownBefore != null) {
             countDownBefore.cancel();
             countDownBefore= null;
@@ -552,13 +566,13 @@ Email: raghulmaniam@gmail.com
             exitSound.start();
 
         super.onBackPressed();
-        gameover= true;
+        gameOver = true;
         finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
     }
 
-    public void ScoreDelegator(TextView dialogText){
+    public void delegateScores(TextView dialogText){
 
         SharedPreferences prefs = this.getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
         int highScoreEasy = prefs.getInt("easy", 0); //0 is the default value
@@ -567,6 +581,7 @@ Email: raghulmaniam@gmail.com
 
         if(finalScore>highScoreEasy)
         {
+            //new high score
             Editor editor = prefs.edit();
             editor.putInt("easy", finalScore);
             editor.apply();
@@ -576,9 +591,9 @@ Email: raghulmaniam@gmail.com
             star.setVisibility(View.VISIBLE);
             rotate(star);
         }
-        else {
+        /*else {
             //customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
-        }
+        }*/
 
         dialogText.setText(finalScoreString);
     }
@@ -657,7 +672,6 @@ Email: raghulmaniam@gmail.com
         shape.setStroke(5,Color.BLACK);
 
         shape.setColor(color);
-
         button.setBackground(shape);
 
         LayoutParams layoutparams = new LinearLayout.LayoutParams(width, height);
@@ -667,7 +681,6 @@ Email: raghulmaniam@gmail.com
     }
 
     public  void customAnimation (FrameLayout layout , int animType , int duration ){
-
         Animation anim = AnimationUtils.loadAnimation(this, animType);
         anim.setDuration(duration);
         anim.setRepeatCount(Animation.INFINITE);
