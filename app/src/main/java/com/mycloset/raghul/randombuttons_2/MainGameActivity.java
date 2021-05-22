@@ -98,6 +98,8 @@ Email: raghulmaniam@gmail.com
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
 
+    MediaPlayer highScoreSound = null;
+
     public static int GAME_COUNTER_LIMIT = 15;
     public static int INITIAL_DELAY = 1000;
 
@@ -164,6 +166,7 @@ Email: raghulmaniam@gmail.com
         clickSound = MediaPlayer.create(this, R.raw.rand_click_wav);
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
+        highScoreSound = MediaPlayer.create(this, R.raw.new_high_score);
 
         Intent intent = getIntent();
         curMode = intent.getIntExtra("mode", 1);
@@ -200,17 +203,17 @@ Email: raghulmaniam@gmail.com
         public void run() {
 
             if (!gameOver) {
-                counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
+                counterValue.setText(String.format(Locale.getDefault(), "%d", counter));
                 //counterValue.setText(Integer.toString(counter));
 
                 newButton();
 
                 totalButtons++;
                 counter++;
-                counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
+                counterValue.setText(String.format(Locale.getDefault(), "%d", counter));
                 //counterValue.setText(Integer.toString(counter));
 
-                progressInt = new BigDecimal(counter).divide(new BigDecimal(15), 2 , RoundingMode.UP).multiply(new BigDecimal(100));
+                progressInt = new BigDecimal(counter).divide(new BigDecimal(15), 2, RoundingMode.UP).multiply(new BigDecimal(100));
                 progressBar.setProgress(progressInt.intValue());
 
                 /*
@@ -222,59 +225,56 @@ Email: raghulmaniam@gmail.com
                 6. Blink Anim
                  */
 
-                switch(curLevel)
-                {
-                    case 0:
-                    {
-                        if(buttonsClickedForLevelChange>10) {
-                            customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
-                            callLevelUpText();
-                            curLevel = 1;
+                /*if(!isModeGroovy) {
+                    switch (curLevel) {
+                        case 0: {
+                            if (buttonsClickedForLevelChange > 10) {
+                                customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
+                                callLevelUpText();
+                                curLevel = 1;
+                            }
+                            break;
                         }
-                        break;
-                    }
 
-                    case 1:
-                    {
-                        if(buttonsClickedForLevelChange>30) {
-                            customAnimation(mainFrameLayout, R.anim.blink_anim, 2000);
-                            callLevelUpText();
-                            curLevel = 2;
+                        case 1: {
+                            if (buttonsClickedForLevelChange > 30) {
+                                customAnimation(mainFrameLayout, R.anim.blink_anim, 2000);
+                                callLevelUpText();
+                                curLevel = 2;
+                            }
+                            break;
                         }
-                        break;
-                    }
 
-                    case 2:
-                    {
-                        if(buttonsClickedForLevelChange>50) {
-                            customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
-                            callLevelUpText();
-                            curLevel = 3;
+                        case 2: {
+                            if (buttonsClickedForLevelChange > 50) {
+                                customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
+                                callLevelUpText();
+                                curLevel = 3;
+                            }
+                            break;
                         }
-                        break;
-                    }
 
-                    case 3:
-                    {
-                        if(buttonsClickedForLevelChange>70) {
-                            mainFrameLayout.clearAnimation();
-                            customAnimation(mainFrameLayout, R.anim.blink_anim, 2000);
-                            callLevelUpText();
-                            curLevel = 4;
+                        case 3: {
+                            if (buttonsClickedForLevelChange > 70) {
+                                //mainFrameLayout.clearAnimation();
+                                customAnimation(mainFrameLayout, R.anim.blink_anim, 2000);
+                                callLevelUpText();
+                                curLevel = 4;
+                            }
+                            break;
                         }
-                        break;
-                    }
 
-                    case 4:
-                    {
-                        if(buttonsClickedForLevelChange>90){
-                            customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
-                            callLevelUpText();
-                            curLevel = 5;
+                        case 4: {
+                            if (buttonsClickedForLevelChange > 90) {
+                                customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
+                                callLevelUpText();
+                                curLevel = 5;
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
+                }*/
+
 
                 if (counter < GAME_COUNTER_LIMIT) {
 
@@ -303,7 +303,7 @@ Email: raghulmaniam@gmail.com
                     //Number of buttons per second
                     speed = (1000) / (delayInMS);
 
-                    buttonSpeedView.setText(String.format(Locale.getDefault(), "%d" , speed));
+                    buttonSpeedView.setText(String.format(Locale.getDefault(), "%d", speed));
                     //buttonSpeedView.setText(Long.toString(speed));
                     mHandler.postDelayed(createButtonRunnable, delayInMS);
                 } else {
@@ -315,8 +315,7 @@ Email: raghulmaniam@gmail.com
                 if (counterValue.getText().toString().equals("0") || counter < 0) {
                     gameOver = true;
                     gameOver();
-                }
-                else
+                } else
                     mHandler.postDelayed(createButtonRunnable, 20);
             }
         }
@@ -581,11 +580,15 @@ Email: raghulmaniam@gmail.com
 
         if(finalScore>highScoreEasy)
         {
+
             //new high score
             Editor editor = prefs.edit();
             editor.putInt("easy", finalScore);
             editor.apply();
             customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
+
+            if(highScoreSound!= null)
+                highScoreSound.start();
 
             ImageView star = gameoverDialog.findViewById(R.id.mem_star);
             star.setVisibility(View.VISIBLE);
@@ -612,7 +615,17 @@ Email: raghulmaniam@gmail.com
 
     public void startGame() {
         mainFrameLayout.setOnClickListener(this);
+
+        blink_anim(mainFrameLayout, 5000);
+
         createButtonRunnable.run();
+    }
+
+    public void blink_anim(FrameLayout layout, int duration) {
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.blink_anim);
+        anim.setDuration(duration);
+        anim.setRepeatCount(Animation.INFINITE);
+        layout.startAnimation(anim);
     }
 
     public void animate(Button button) {
@@ -686,6 +699,8 @@ Email: raghulmaniam@gmail.com
         anim.setRepeatCount(Animation.INFINITE);
         layout.startAnimation(anim);
     }
+
+
 }
 
 

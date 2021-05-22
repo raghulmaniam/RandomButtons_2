@@ -65,7 +65,8 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
     Button retryButton, exitButton;
     TextView curLevelText;
     CountDownTimer timerCheck;
-    CountDownTimer countdownTimer;
+    CountDownTimer countdownBeforeTimer;
+    CountDownTimer countdownAfterTimer;
 
     int BUTTON_SIZE = 200;
     GradientDrawable whiteshape, redShape;
@@ -77,6 +78,9 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
 
     MediaPlayer lightOn = null;
     MediaPlayer lightOff = null;
+
+    MediaPlayer highScoreSound = null;
+    MediaPlayer levelUpSound = null;
 
     volatile Boolean gameOver = false;
     volatile Boolean backPressed = false;
@@ -120,6 +124,8 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
         lightOn = MediaPlayer.create(this, R.raw.light_on_sound);
         lightOff = MediaPlayer.create(this, R.raw.light_off_sound);
+        highScoreSound = MediaPlayer.create(this, R.raw.new_high_score);
+        levelUpSound = MediaPlayer.create(this, R.raw.level_up);
 
         whiteshape=  new GradientDrawable();
         whiteshape.setCornerRadius( 12 );
@@ -180,6 +186,9 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
 
                 if(correctButtonsClicked.get() >= buttonsCount.get())
                 {
+                    if(levelUpSound != null)
+                        levelUpSound.start();
+
                     //next level
                     star.setVisibility(View.VISIBLE);
                     rotate(star);
@@ -277,7 +286,7 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
     }
 
     public void counterBeforeGame() {
-        countdownTimer =new CountDownTimer(4000, 1000) {
+        countdownBeforeTimer =new CountDownTimer(4000, 1000) {
             Long val;
             public void onTick(long millisUntilFinished) {
                 val = millisUntilFinished / 1000;
@@ -293,7 +302,7 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
     }
 
     public void countdownAfterGame() {
-        new CountDownTimer(5000, 1000) {
+        countdownAfterTimer = new CountDownTimer(5000, 1000) {
             Long val;
             public void onTick(long millisUntilFinished) {
                 counterValueMain.setVisibility(View.VISIBLE);
@@ -550,6 +559,9 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
             editor.apply();
             customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
 
+            if(highScoreSound!= null)
+                highScoreSound.start();
+
             ImageView star = gameoverDialog.findViewById(R.id.mem_star);
             star.setVisibility(View.VISIBLE);
             rotate(star);
@@ -638,9 +650,14 @@ public class MemoryButtons extends Activity implements View.OnClickListener {
             timerCheck = null;
         }
 
-        if(countdownTimer!= null) {
-            countdownTimer.cancel();
-            countdownTimer = null;
+        if(countdownAfterTimer != null)
+        {
+            countdownAfterTimer.cancel();
+            countdownAfterTimer=null;
+        }
+        if(countdownBeforeTimer != null) {
+            countdownBeforeTimer.cancel();
+            countdownBeforeTimer = null;
         }
 
         finish();

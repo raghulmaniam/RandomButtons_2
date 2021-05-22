@@ -58,10 +58,13 @@ Email: raghulmaniam@gmail.com
     TextView dialogText;
     Button retryButton, exitButton;
     Vibrator v;
+
     MediaPlayer clickSound = null;
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
     MediaPlayer tickFastSound = null;
+    MediaPlayer highScoreSound = null;
+
     CountDownTimer counterAfterGame;
 
     volatile Boolean backPressed = false;
@@ -147,6 +150,7 @@ Email: raghulmaniam@gmail.com
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
         tickFastSound = MediaPlayer.create(this, R.raw.tick_fast);
+        highScoreSound = MediaPlayer.create(this, R.raw.new_high_score);
 
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -409,6 +413,9 @@ Email: raghulmaniam@gmail.com
             editor.putInt("seq", finalScore);
             editor.apply();
             customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
+
+            if(highScoreSound != null)
+                highScoreSound.start();
 
             ImageView star = gameoverDialog.findViewById(R.id.mem_star);
             star.setVisibility(View.VISIBLE);

@@ -77,8 +77,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private String DIALOG_SIZE_SMALL="small";
     private String DIALOG_SIZE_LARGE="large";
 
+    //MediaPlayer bgm = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        MusicManager.getInstance().initalizeMediaPlayer(this, R.raw.intro2);
 
         AppRate.with(this)
                 .setInstallDays(0)
@@ -139,11 +143,31 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         mHandler.postDelayed(bulbOnRunnable, 500);
 
+
+
         // Create the client used to sign in to Google services.
         mGoogleSignInClient = GoogleSignIn.getClient(this,
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).requestEmail().build());
 
         bulbOn = false;
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        Log.d(TAG, "MYonStop is called");
+
+        MusicManager.getInstance().stopPlaying();
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        //Log.d(TAG, "MYonStart is called");
+
+        MusicManager.getInstance().startPlaying();
     }
 
     @Override
@@ -173,6 +197,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                             onConnected(task.getResult());
 
+                            //dialog to be displayed only during manual sign-in and not the silent sign in
                             if(startupDone && googleClicked)
                             {
                                 googleClicked = false;
@@ -182,6 +207,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         } else {
                             Log.d(TAG, "signInSilently(): failure", task.getException());
 
+                            //dialog to be displayed only during manual sign-in and not the silent sign in
                             if(startupDone) {
                                 dialogMessage = "Sign in Cancelled (or) failed. Please check the Network connection or try again later";
                                 showDialogBox(dialogMessage, DIALOG_SIZE_SMALL);
@@ -330,7 +356,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 bulb.setImageResource(R.drawable.bulb_on);
                 bulbOn = true;
                 homeScreen.setBackgroundResource(R.drawable.curve_intro);
+
+                mHandler.postDelayed(bgmRunnable, 500);
+
             }
+        }
+    };
+
+    private Runnable bgmRunnable = new Runnable(){
+        @Override
+        public void run()
+        {
+            MusicManager.getInstance().startPlaying();
         }
     };
 
@@ -347,6 +384,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
 
+                //finish();
+
                 break;
             }
             case R.id.exit: {
@@ -354,8 +393,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if(exitSound!= null)
                     exitSound.start();
 
-                finish();
-                System.exit(0);
+                //finish();
+
+                finishAffinity();/*to close all the open activities in stack*/
+                //finish();
+                System.exit(0); /*to close the application*/
                 break;
             }
             case R.id.googleLogin:{

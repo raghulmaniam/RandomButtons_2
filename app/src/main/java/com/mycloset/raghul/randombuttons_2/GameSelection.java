@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -36,6 +37,8 @@ public class GameSelection extends Activity implements View.OnClickListener {
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
 
+    //MediaPlayer bgm = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
 
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
+        //bgm = MediaPlayer.create(this, R.raw.intro);
 
         game1.setOnClickListener(this);
         game2.setOnClickListener(this);
@@ -137,11 +141,30 @@ public class GameSelection extends Activity implements View.OnClickListener {
         if(exitSound!= null)
             exitSound.start();
 
-        super.onBackPressed();
-        finish();
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
+
+        super.onBackPressed();
+        finish();
     }
+
+    /*@Override
+    protected void onStop()
+    {
+        super.onStop();
+        //Log.d(TAG, "MYonStop is called");
+
+        MusicManager.getInstance().stopPlaying();
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        //Log.d(TAG, "MYonStop is called");
+
+        MusicManager.getInstance().startPlaying();
+    }*/
 
 
     @Override
@@ -149,6 +172,8 @@ public class GameSelection extends Activity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.button_game1: {
+
+                MusicManager.getInstance().stopPlaying();
 
                 if(defaultSound!= null)
                     defaultSound.start();
@@ -161,6 +186,8 @@ public class GameSelection extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.button_game1_groovy: {
+
+                MusicManager.getInstance().stopPlaying();
 
                 if(defaultSound!= null)
                     defaultSound.start();
@@ -175,6 +202,8 @@ public class GameSelection extends Activity implements View.OnClickListener {
             case R.id.button_game2: {
                 //showRulesDialog();
 
+                MusicManager.getInstance().stopPlaying();
+
                 if(defaultSound!= null)
                     defaultSound.start();
 
@@ -187,6 +216,8 @@ public class GameSelection extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.button_game3: {
+
+                MusicManager.getInstance().stopPlaying();
 
                 if(defaultSound!= null)
                     defaultSound.start();
