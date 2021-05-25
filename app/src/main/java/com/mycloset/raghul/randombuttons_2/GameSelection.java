@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,19 +28,25 @@ import java.util.Random;
 public class GameSelection extends Activity implements View.OnClickListener {
 
     private Handler mHandler = new Handler();
-    Random rnd = new Random();
+    private Random rnd = new Random();
     private FrameLayout mainFrameLayout;
-    int width,height,leftMargin,topMargin,dummyButtonCounter ;
-    Button game1, game2 , game3 , game1_groovy;
+    private int dummyButtonCounter ;
+
 
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
 
+    //boolean groovyModeClicked = false;
     //MediaPlayer bgm = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Button game1, game2 , game3 , game1_groovy;
+
+        MusicManager.getInstance().initalizeMediaPlayer(this, R.raw.intro2);
+        MusicManager.getInstance().startPlaying();
 
         //--- To set Full Screen mode ---
         super.onCreate(savedInstanceState);
@@ -97,11 +102,12 @@ public class GameSelection extends Activity implements View.OnClickListener {
     }
 
     public void newButton() {
+
+        int width,height,leftMargin,topMargin;
         Button button = new Button(this);
+        Random randomParam = new Random();
 
         animate(button);
-
-        Random randomParam = new Random();
 
         //button dimensions
         height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(25) + 50) * 0.5) + 0.5f);
@@ -148,12 +154,11 @@ public class GameSelection extends Activity implements View.OnClickListener {
         finish();
     }
 
-    /*@Override
+    @Override
     protected void onStop()
     {
         super.onStop();
         //Log.d(TAG, "MYonStop is called");
-
         MusicManager.getInstance().stopPlaying();
     }
 
@@ -162,9 +167,8 @@ public class GameSelection extends Activity implements View.OnClickListener {
     {
         super.onStart();
         //Log.d(TAG, "MYonStop is called");
-
         MusicManager.getInstance().startPlaying();
-    }*/
+    }
 
 
     @Override
@@ -187,21 +191,20 @@ public class GameSelection extends Activity implements View.OnClickListener {
             }
             case R.id.button_game1_groovy: {
 
-                MusicManager.getInstance().stopPlaying();
-
+                //MusicManager.getInstance().stopPlaying();
+                //let the music play in groovy mode as well
+                //groovyModeClicked = true;
                 if(defaultSound!= null)
                     defaultSound.start();
 
                 Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
                 intent.putExtra("mode" , 2); //groovy mode
                 startActivity(intent);
-
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
                 break;
             }
             case R.id.button_game2: {
                 //showRulesDialog();
-
                 MusicManager.getInstance().stopPlaying();
 
                 if(defaultSound!= null)
@@ -210,9 +213,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
                 //sequence buttons
                 Intent intent = new Intent(getApplicationContext(), SequenceButtons.class);
                 startActivity(intent);
-
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
-
                 break;
             }
             case R.id.button_game3: {
@@ -225,9 +226,7 @@ public class GameSelection extends Activity implements View.OnClickListener {
                 //memory buttons
                 Intent intent = new Intent(getApplicationContext(), MemoryButtons.class);
                 startActivity(intent);
-
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
-
                 break;
             }
         }

@@ -45,45 +45,44 @@ public class MainActivity extends Activity implements View.OnClickListener {
     //
 
     private Handler mHandler = new Handler();
-    Random rnd = new Random();
+    private Random rnd = new Random();
     private FrameLayout mainFrameLayout;
-    int width, height, leftMargin,topMargin,dummyButtonCounter;
-    Dialog rulesDialog;
-    ImageView bulb;
-    private  RelativeLayout homeScreen;
-    private  Boolean bulbOn;
+    private int dummyButtonCounter;
+    private Dialog rulesDialog;
+    private ImageView bulb;
+    private RelativeLayout homeScreen;
+    private Boolean bulbOn;
     private TextView titleText;
 
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
-
     MediaPlayer lightOn = null;
     MediaPlayer lightOff = null;
+    //MediaPlayer bgm = null;
 
     private static final int RC_SIGN_IN = 9001;
-
     // Client used to sign in with Google APIs
     private GoogleSignInClient mGoogleSignInClient;
-
     private static final String TAG = "RandomButtons";
-
     // Client used to interact with Google Snapshots.
     LeaderboardsClient mLeaderBoardClient;
 
-    String dialogMessage;
+    private String dialogMessage;
     boolean startupDone = false;
     volatile boolean googleClicked = false;
 
     private String DIALOG_SIZE_SMALL="small";
     private String DIALOG_SIZE_LARGE="large";
 
-    //MediaPlayer bgm = null;
+    boolean startClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        //singleton class for having a single handle of the music object through MainActivity and GameSelectionActivity
         MusicManager.getInstance().initalizeMediaPlayer(this, R.raw.intro2);
 
+        //Rate me plug-in
         AppRate.with(this)
                 .setInstallDays(0)
                 .setLaunchTimes(3)
@@ -118,7 +117,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
-
         lightOn = MediaPlayer.create(this, R.raw.light_on_sound);
         lightOff = MediaPlayer.create(this, R.raw.light_off_sound);
 
@@ -140,15 +138,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         bulb.setImageResource(R.drawable.bulb_off);
         bulbOn = false;
         homeScreen.setBackgroundResource(R.drawable.box_curved);
-
         mHandler.postDelayed(bulbOnRunnable, 500);
-
-
 
         // Create the client used to sign in to Google services.
         mGoogleSignInClient = GoogleSignIn.getClient(this,
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).requestEmail().build());
 
+
+        //start will bull off
         bulbOn = false;
     }
 
@@ -158,15 +155,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onStop();
         Log.d(TAG, "MYonStop is called");
 
-        MusicManager.getInstance().stopPlaying();
+        if(!startClicked) //this should be called only when home is called
+            MusicManager.getInstance().stopPlaying();
     }
 
     @Override
     protected void onStart()
     {
         super.onStart();
-        //Log.d(TAG, "MYonStart is called");
-
+        Log.d(TAG, "MYonStart is called");
         MusicManager.getInstance().startPlaying();
     }
 
@@ -307,6 +304,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 
     public void newButton() {
+
+        int width, height, leftMargin,topMargin;
+
         Button button = new Button(this);
 
         animate(button);
@@ -380,7 +380,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if(defaultSound!= null)
                     defaultSound.start();
 
+                startClicked = true;
+
                 Intent intent = new Intent(getApplicationContext(), GameSelection.class);
+                //intent.putExtra("isGameSelection" , true);
                 startActivity(intent);
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_out_left);
 

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import android.content.Context;
 import android.os.Vibrator;
 import android.view.animation.AnimationUtils;
@@ -43,77 +45,54 @@ Email: raghulmaniam@gmail.com
 
  */
 
-    private TextView score, timeCounter,counterValue,counterValueMain,buttonSpeedView ;
+    //private TextView score, timeCounter,counterValue,counterValueMain,buttonSpeedView ;
+    //private TextView score;
     TextView dialogText;
     private FrameLayout mainFrameLayout;
 
-    private Integer counterUpTimer = 0, counterBeforeGameValue =3 ;
-    int counter, totalButtons,buttonsClicked, buttonsClickedForLevelChange,delayInMS , width,height ,leftMargin,topMargin ;
-    long speed;
-    Bundle bundle;
-    int curLevel = 0;
+    private int counter, totalButtons,delayInMS , width,height ,leftMargin,topMargin ;
+    private AtomicInteger totalScore = new AtomicInteger(0);
 
-    int FADE_IN_DURATION = 10500;
-    Random rnd = new Random();
 
-    int layoutHeight, layoutWidth;
-
-    private ImageView secondTurtle;
+    private Random rnd = new Random();
+    private int layoutHeight, layoutWidth;
     private Handler mHandler = new Handler();
-    public Runnable counterUpAfterGame = new Runnable() {
-        @Override
-        public void run() {
-            timeCounter.setText(String.format(Locale.getDefault(), "%d" , ++counterUpTimer));
-            //timeCounter.setText(Integer.toString(++counterUpTimer));
-            if(!gameOver)
-            mHandler.postDelayed(counterUpAfterGame, 1000);
-        }
-    };
-    Runnable counterBeforeGame = new Runnable() {
-        @Override
-        public void run() {
+    private Dialog rulesDialog , gameOverDialog;
+    private ProgressBar progressBar;
 
-            counterValueMain.setText(counterBeforeGameValue);
-            counterBeforeGameValue--;
-
-            if (counterBeforeGameValue > 0)
-                mHandler.postDelayed(counterBeforeGame, 1000);
-        }
-    };
-
-    Dialog rulesDialog , gameoverDialog;
-
-    public ProgressBar progressBar;
-    public BigDecimal progressInt;
-
-    CountDownTimer timer;
-    CountDownTimer countDownBefore;
-
-    Button retryButton, exitButton;
-
-    volatile Boolean gameOver = false;
-    volatile Boolean backPressed = false;
+//    private CountDownTimer timer;
+    private CountDownTimer countDownBefore;
+    private Button retryButton, exitButton;
+    private Button scoreButton;
+    volatile private Boolean gameOver = false;
+    volatile private Boolean backPressed = false;
 
     MediaPlayer clickSound = null;
     MediaPlayer defaultSound = null;
     MediaPlayer exitSound = null;
-
+    MediaPlayer smallClapsSound = null;
+    MediaPlayer largeClapsSound = null;
     MediaPlayer highScoreSound = null;
+    MediaPlayer grooveSound = null;
 
-    public static int GAME_COUNTER_LIMIT = 15;
-    public static int INITIAL_DELAY = 1000;
 
     List<Integer> animList = new ArrayList<>();
 
-    int animListSize;
-    int curMode;
+    private int animListSize;
 
-    volatile  Boolean isModeGroovy = false;
+    private int grooveSoundListSize;
+    List<MediaPlayer> grooveSoundList = new ArrayList<>();
+
+    volatile private Boolean isModeGroovy = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ImageView start;
+        int curMode;
+        int INITIAL_DELAY = 1000;
+        //Bundle bundle;
+
+        //ImageView start;
 
         //--- To set Full Screen mode ---
         super.onCreate(savedInstanceState);
@@ -123,23 +102,6 @@ Email: raghulmaniam@gmail.com
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //--- To set Full Screen mode ---
 
-        setContentView(R.layout.activity_main_game);
-
-        bundle = getIntent().getExtras();
-
-        score = findViewById(R.id.scoreTextView);
-        timeCounter = findViewById(R.id.timeValueTextView);
-        counterValue = findViewById(R.id.CounterTextView);
-        counterValueMain = findViewById(R.id.CounterTextViewMain);
-        buttonSpeedView = findViewById(R.id.buttonSpeedView);
-
-        secondTurtle = findViewById(R.id.secondTurtleImage);
-        secondTurtle.setOnClickListener(this);
-        secondTurtle.setTag("closed");
-
-        mainFrameLayout = findViewById(R.id.mainGameLayout);
-        progressBar = findViewById(R.id.progressbar);
-
         //initial values
         height = 50;
         width = 50;
@@ -147,26 +109,29 @@ Email: raghulmaniam@gmail.com
         topMargin = 1;
         counter = 0;
         totalButtons = 0;
-        buttonsClicked = 0;
 
-        timeCounter.setTextColor(Color.RED);
+
+        setContentView(R.layout.activity_main_game);
+
+        //bundle = getIntent().getExtras();
+
+        scoreButton = findViewById(R.id.scoreButton);
+        scoreButton.setText(String.format(Locale.getDefault(), "%d" , totalScore.get()));
+
+        scoreButton.setVisibility(View.INVISIBLE);
+
+        mainFrameLayout = findViewById(R.id.mainGameLayout);
+        progressBar = findViewById(R.id.progressbar);
 
         delayInMS = INITIAL_DELAY;
-        score.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
-        //score.setText(Integer.toString(buttonsClicked));
-        buttonSpeedView.setText(String.format(Locale.getDefault(), "%d" , 0));
-        //buttonSpeedView.setText(Long.toString(0));
-        counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
-        //counterValue.setText(Integer.toString(buttonsClicked));
 
-        start = findViewById(R.id.start);
-        start.setOnClickListener(this);
-        start.setImageResource(R.mipmap.start);
-
+        //bulletSound1 = MediaPlayer.create(this, R.raw.click3);
         clickSound = MediaPlayer.create(this, R.raw.rand_click_wav);
         defaultSound = MediaPlayer.create(this, R.raw.default_sound);
         exitSound = MediaPlayer.create(this, R.raw.exit_sound);
         highScoreSound = MediaPlayer.create(this, R.raw.new_high_score);
+        smallClapsSound = MediaPlayer.create(this, R.raw.claps_small);
+        largeClapsSound = MediaPlayer.create(this, R.raw.claps_large);
 
         Intent intent = getIntent();
         curMode = intent.getIntExtra("mode", 1);
@@ -181,10 +146,26 @@ Email: raghulmaniam@gmail.com
             animList.add(R.anim.fadein);
             animList.add(R.anim.dialog_anim);
             animList.add(R.anim.rotate_right);
+            animList.add(R.anim.rotate_left);
+
+            animList.add(R.anim.rotate_right); //adding again to increase the probability
+            animList.add(R.anim.rotate_left); //adding again to increase the probability
+
             animList.add(R.anim.zoomout);
             animList.add(R.anim.dialog_anim_down);
 
             animListSize = animList.size();
+
+            grooveSoundList.add(MediaPlayer.create(this, R.raw.groove1));
+            grooveSoundList.add(MediaPlayer.create(this, R.raw.groove2));
+            grooveSoundList.add(MediaPlayer.create(this, R.raw.groove3));
+            grooveSoundList.add(MediaPlayer.create(this, R.raw.groove4));
+            grooveSoundList.add(MediaPlayer.create(this, R.raw.groove5));
+            grooveSoundList.add(MediaPlayer.create(this, R.raw.groove6));
+            grooveSoundList.add(MediaPlayer.create(this, R.raw.groove7));
+
+            grooveSoundListSize = grooveSoundList.size();
+
         }
 
         /*Width
@@ -196,22 +177,28 @@ Email: raghulmaniam@gmail.com
         Right Margin
         Minimum: 1  Minimum: 400
         */
+
+        showRulesDialog();
+
     }
 
+
+
     private Runnable createButtonRunnable = new Runnable() {
+
+        private int GAME_COUNTER_LIMIT = 15;
+        private BigDecimal progressInt;
+        //private long speed;
+
         @Override
         public void run() {
 
             if (!gameOver) {
-                counterValue.setText(String.format(Locale.getDefault(), "%d", counter));
-                //counterValue.setText(Integer.toString(counter));
 
                 newButton();
 
                 totalButtons++;
                 counter++;
-                counterValue.setText(String.format(Locale.getDefault(), "%d", counter));
-                //counterValue.setText(Integer.toString(counter));
 
                 progressInt = new BigDecimal(counter).divide(new BigDecimal(15), 2, RoundingMode.UP).multiply(new BigDecimal(100));
                 progressBar.setProgress(progressInt.intValue());
@@ -224,57 +211,6 @@ Email: raghulmaniam@gmail.com
                 5. Bounce
                 6. Blink Anim
                  */
-
-                /*if(!isModeGroovy) {
-                    switch (curLevel) {
-                        case 0: {
-                            if (buttonsClickedForLevelChange > 10) {
-                                customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
-                                callLevelUpText();
-                                curLevel = 1;
-                            }
-                            break;
-                        }
-
-                        case 1: {
-                            if (buttonsClickedForLevelChange > 30) {
-                                customAnimation(mainFrameLayout, R.anim.blink_anim, 2000);
-                                callLevelUpText();
-                                curLevel = 2;
-                            }
-                            break;
-                        }
-
-                        case 2: {
-                            if (buttonsClickedForLevelChange > 50) {
-                                customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
-                                callLevelUpText();
-                                curLevel = 3;
-                            }
-                            break;
-                        }
-
-                        case 3: {
-                            if (buttonsClickedForLevelChange > 70) {
-                                //mainFrameLayout.clearAnimation();
-                                customAnimation(mainFrameLayout, R.anim.blink_anim, 2000);
-                                callLevelUpText();
-                                curLevel = 4;
-                            }
-                            break;
-                        }
-
-                        case 4: {
-                            if (buttonsClickedForLevelChange > 90) {
-                                customAnimation(mainFrameLayout, R.anim.fadein, FADE_IN_DURATION);
-                                callLevelUpText();
-                                curLevel = 5;
-                            }
-                            break;
-                        }
-                    }
-                }*/
-
 
                 if (counter < GAME_COUNTER_LIMIT) {
 
@@ -301,10 +237,8 @@ Email: raghulmaniam@gmail.com
                         delayInMS--;
 
                     //Number of buttons per second
-                    speed = (1000) / (delayInMS);
+                    //speed = (1000) / (delayInMS);
 
-                    buttonSpeedView.setText(String.format(Locale.getDefault(), "%d", speed));
-                    //buttonSpeedView.setText(Long.toString(speed));
                     mHandler.postDelayed(createButtonRunnable, delayInMS);
                 } else {
                     gameOver = true;
@@ -312,7 +246,7 @@ Email: raghulmaniam@gmail.com
                 }
 
             } else {
-                if (counterValue.getText().toString().equals("0") || counter < 0) {
+                if (/*counterValue.getText().toString().equals("0") ||*/ counter < 0) {
                     gameOver = true;
                     gameOver();
                 } else
@@ -343,8 +277,14 @@ Email: raghulmaniam@gmail.com
             @Override
             public void onClick(View view)
             {
+
+                layoutHeight = mainFrameLayout.getMeasuredHeight();
+                layoutWidth = mainFrameLayout.getMeasuredWidth();
+
                 rulesDialog.dismiss();
-                counterBeforeGame();
+                scoreButton.setVisibility(View.VISIBLE);
+                //counterBeforeGame();
+                startGame();
             }
         }
         );
@@ -353,58 +293,38 @@ Email: raghulmaniam@gmail.com
     @Override
     public void onClick(View view) {
 
-        switch (view.getId()) {
-            case R.id.start: {
-                removeButton(view);
-                layoutHeight = mainFrameLayout.getMeasuredHeight();
-                layoutWidth = mainFrameLayout.getMeasuredWidth();
+        if(view.getId() == R.id.mainGameLayout)
+        {
+            //Negative Score
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if(v!=null)
+                v.vibrate(50);
+            totalScore.decrementAndGet();
 
-                if(defaultSound!= null)
-                    defaultSound.start();
+        }
+        else
+        {
+            //Positive Score
+            removeButton(view);
+            zoomEffectScoreButton(scoreButton);
 
-                counterValueMain.setVisibility(View.VISIBLE);
-                showRulesDialog();
-                break;
+            if(totalScore.get() == 100)
+                smallClapsSound.start();
+
+            scoreButton.setText(String.format(Locale.getDefault(), "%d" , totalScore.get()));
+            if(isModeGroovy){
+                //anim = AnimationUtils.loadAnimation(this, animList.get(rnd.nextInt(animListSize )));
+                grooveSound = grooveSoundList.get(rnd.nextInt(grooveSoundListSize));
+                if(grooveSound!= null)
+                    grooveSound.start();
             }
-            case R.id.mainGameLayout: {
-                //Negative Score
-                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-                if(v!=null)
-                    v.vibrate(50);
-
-                buttonsClicked--;
-                score.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
-                //score.setText(Integer.toString(buttonsClicked));
-                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
-                //counterValueMain.setText(Integer.toString(buttonsClicked));
-                break;
-            }
-            case R.id.secondTurtleImage: {
-                if(defaultSound!= null)
-                    defaultSound.start();
-
-                levelUp();
-                break;
-            }
-            default: {
-                //Positive Score
-                removeButton(view);
-
-                if(clickSound!= null)
+            else {
+                if (clickSound != null)
                     clickSound.start();
-
-                counter--;
-                counterValue.setText(String.format(Locale.getDefault(), "%d" , counter));
-                //counterValue.setText(Integer.toString(counter));
-                buttonsClicked++;
-                buttonsClickedForLevelChange++;
-                score.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
-                //score.setText(Integer.toString(buttonsClicked));
-                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , buttonsClicked));
-                //counterValueMain.setText(Integer.toString(buttonsClicked));
-                break;
             }
+
+            counter--;
+            totalScore.incrementAndGet();
         }
     }
 
@@ -414,42 +334,6 @@ Email: raghulmaniam@gmail.com
         ViewGroup parentView = (ViewGroup) view.getParent();
         parentView.removeView(view);
 
-    }
-
-    public void callLevelUpText() {
-        levelUp();
-    }
-
-    public void levelUp() {
-        new CountDownTimer(2000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                secondTurtle.setImageResource(R.mipmap.turtle_ingame);
-            }
-
-            public void onFinish() {
-                secondTurtle.setImageResource(R.drawable.turtle_blink);
-            }
-        }.start();
-    }
-
-    public void counterBeforeGame() {
-        countDownBefore = new CountDownTimer(4000, 1000) {
-
-            Long val;
-            public void onTick(long millisUntilFinished) {
-                val = millisUntilFinished / 1000;
-                counterValueMain.setText(String.format(Locale.getDefault(), "%d" , val.intValue()));
-                //counterValueMain.setText(Integer.toString(val.intValue()));
-            }
-
-            public void onFinish() {
-                counterValueMain.setVisibility(View.GONE);
-                //customToast("Start" , Toast.LENGTH_SHORT);
-                startGame();
-                counterUpAfterGame.run();
-            }
-        }.start();
     }
 
     public void counterAfterGame() {
@@ -485,66 +369,71 @@ Email: raghulmaniam@gmail.com
         if(v!=null)
             v.vibrate(200);
 
-        if(timer!= null)
-            timer.onFinish();
+        /*if(timer!= null)
+            timer.onFinish();*/
 
         showGameOverDialog();
     }
 
     public void showGameOverDialog()
     {
-        gameoverDialog = new Dialog(this);
-        gameoverDialog.setContentView(R.layout.rules_dialog_2);
-        if(gameoverDialog.getWindow()!= null)
-            gameoverDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        gameOverDialog = new Dialog(this);
+        gameOverDialog.setContentView(R.layout.rules_dialog_2);
+        if(gameOverDialog.getWindow()!= null)
+            gameOverDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        dialogText = gameoverDialog.findViewById(R.id.rulesText);
+        dialogText = gameOverDialog.findViewById(R.id.rulesText);
 
-        retryButton = gameoverDialog.findViewById(R.id.dialogRetryButton);
-        exitButton = gameoverDialog.findViewById(R.id.dialogExitButton);
+        retryButton = gameOverDialog.findViewById(R.id.dialogRetryButton);
+        exitButton = gameOverDialog.findViewById(R.id.dialogExitButton);
 
         retryButton.setVisibility(View.GONE);
         exitButton.setVisibility(View.GONE);
 
-        gameoverDialog.setCancelable(false);
+        gameOverDialog.setCancelable(false);
 
-        Window window = gameoverDialog.getWindow();
+        Window window = gameOverDialog.getWindow();
         window.setGravity(Gravity.CENTER);
         window.getAttributes().windowAnimations=R.style.DialogAnimation;
         window.setLayout(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
-        gameoverDialog.show();
+        gameOverDialog.show();
 
         retryButton.setOnClickListener(new View.OnClickListener(){
-                                          @Override
-                                          public void onClick(View view)
-                                          {
-                                              gameoverDialog.dismiss();
+          @Override
+          public void onClick(View view)
+          {
+              gameOverDialog.dismiss();
 
-                                              if(defaultSound!= null)
-                                                  defaultSound.start();
+              if(defaultSound!= null)
+                  defaultSound.start();
 
-                                              Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
-                                              startActivity(intent);
-                                          }
-                                      }
+              Intent intent = new Intent(getApplicationContext(), MainGameActivity.class);
+              if(isModeGroovy)
+                  intent.putExtra("mode" , 2); //groovy mode
+              else
+                  intent.putExtra("mode" , 1); //classic mode
+
+              startActivity(intent);
+            }
+        }
         );
 
         exitButton.setOnClickListener(new View.OnClickListener(){
-                                           @Override
-                                           public void onClick(View view)
-                                           {
+       @Override
+       public void onClick(View view)
+       {
 
-                                               if(exitSound!= null)
-                                                   exitSound.start();
+            if(exitSound!= null)
+            exitSound.start();
 
-                                               Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                               startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
 
-                                               overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
+            overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
 
-                                               gameoverDialog.dismiss();
-                                           }
-                                       }
+            gameOverDialog.dismiss();
+        }
+        }
         );
 
         counterAfterGame();
@@ -571,28 +460,41 @@ Email: raghulmaniam@gmail.com
         overridePendingTransition(R.anim.enter_fron_left, R.anim.exit_out_right);
     }
 
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        //Log.d(TAG, "MYonStop is called");
+
+        MusicManager.getInstance().stopPlaying();
+    }
+
+
     public void delegateScores(TextView dialogText){
 
         SharedPreferences prefs = this.getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
         int highScoreEasy = prefs.getInt("easy", 0); //0 is the default value
-        int finalScore = Integer.parseInt(score.getText().toString());
-        String finalScoreString ="Score: " + finalScore +"\n" +"High Score: " +highScoreEasy;
+        //int finalScore = totalScore.get();
+        String finalScoreString ="Score: " + totalScore.get() +"\n" +"High Score: " +highScoreEasy;
 
-        if(finalScore>highScoreEasy)
+        if(totalScore.get()>highScoreEasy)
         {
 
             //new high score
             Editor editor = prefs.edit();
-            editor.putInt("easy", finalScore);
+            editor.putInt("easy", totalScore.get());
             editor.apply();
             customToast("Meet the new Champion! High Score! ", Toast.LENGTH_LONG);
 
             if(highScoreSound!= null)
                 highScoreSound.start();
 
-            ImageView star = gameoverDialog.findViewById(R.id.mem_star);
+            ImageView star = gameOverDialog.findViewById(R.id.mem_star);
             star.setVisibility(View.VISIBLE);
             rotate(star);
+
+            if(largeClapsSound!= null)
+                largeClapsSound.start();
         }
         /*else {
             //customToast( "I was so close to becoming the world champion.. So close..!" ,Toast.LENGTH_LONG);
@@ -616,7 +518,7 @@ Email: raghulmaniam@gmail.com
     public void startGame() {
         mainFrameLayout.setOnClickListener(this);
 
-        blink_anim(mainFrameLayout, 5000);
+        blink_anim(mainFrameLayout, 3000);
 
         createButtonRunnable.run();
     }
@@ -627,6 +529,18 @@ Email: raghulmaniam@gmail.com
         anim.setRepeatCount(Animation.INFINITE);
         layout.startAnimation(anim);
     }
+
+    public void zoomEffectScoreButton(Button button) {
+        Animation anim;
+
+        anim = AnimationUtils.loadAnimation(this, R.anim.zoomin_fade);
+
+        anim.setDuration(500);
+        anim.setRepeatCount(1);
+
+        button.startAnimation(anim);
+    }
+
 
     public void animate(Button button) {
         Animation anim;
@@ -658,7 +572,6 @@ Email: raghulmaniam@gmail.com
         button.setOnClickListener(this);
 
         animate(button);
-
         Random randomParam = new Random();
 
         /*Width
@@ -674,18 +587,18 @@ Email: raghulmaniam@gmail.com
         height = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 70) * 0.5) + 0.5f);
         width = (int) (((getResources().getDisplayMetrics().density) * (randomParam.nextInt(220) + 70) * 0.5) + 0.5f);
 
-        leftMargin = randomParam.nextInt(layoutWidth-width);
-        topMargin = randomParam.nextInt(layoutHeight-height-240) +240;
-        /* 240 - > to negate the height till the progress bar*/
-
         int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
-        GradientDrawable shape =  new GradientDrawable();
-        shape.setCornerRadius( 12 );
-        shape.setStroke(5,Color.BLACK);
+        GradientDrawable shape = new GradientDrawable();
+        shape.setCornerRadius(12);
+        shape.setStroke(5, Color.BLACK);
 
         shape.setColor(color);
         button.setBackground(shape);
+
+        leftMargin = randomParam.nextInt(layoutWidth-width);
+        topMargin = randomParam.nextInt(layoutHeight-height-240) +240;
+        /* 240 - > to negate the height till the progress bar*/
 
         LayoutParams layoutparams = new LinearLayout.LayoutParams(width, height);
         layoutparams.setMargins(leftMargin, topMargin, 0, 0);
@@ -693,15 +606,14 @@ Email: raghulmaniam@gmail.com
         mainFrameLayout.addView(button, layoutparams);
     }
 
-    public  void customAnimation (FrameLayout layout , int animType , int duration ){
+   /* public  void customAnimation (FrameLayout layout , int animType , int duration ){
         Animation anim = AnimationUtils.loadAnimation(this, animType);
         anim.setDuration(duration);
         anim.setRepeatCount(Animation.INFINITE);
         layout.startAnimation(anim);
-    }
-
-
+    }*/
 }
+
 
 
 

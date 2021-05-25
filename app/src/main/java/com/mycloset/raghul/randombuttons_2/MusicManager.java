@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import java.io.IOException;
 
 public class MusicManager {
+    //singleton class
     private static final MusicManager ourInstance = new MusicManager();
     private MediaPlayer mp;
 
